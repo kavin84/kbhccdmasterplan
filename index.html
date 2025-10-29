@@ -1,0 +1,1997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KBHCCD Master Plan - November 12, 2025 Demo | Convention Center Expansion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-blue: #003F87;
+            --accent-blue: #0066CC;
+            --secondary-green: #00A859;
+            --neutral-gray: #4A4A4A;
+            --light-gray: #F5F5F5;
+            --white: #FFFFFF;
+            --border-color: #E0E0E0;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--neutral-gray);
+            background-color: var(--white);
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Global Sticky Navigation */
+        .global-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 1000;
+            height: 70px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .nav-container {
+            height: 100%;
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        /* Logo */
+        .nav-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-blue);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-logo::before {
+            content: "";
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+            border-radius: 8px;
+        }
+        
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            list-style: none;
+            align-items: center;
+            height: 100%;
+            flex: 1;
+            justify-content: center;
+            margin: 0 30px;
+        }
+        
+        .nav-tab {
+            height: 100%;
+            position: relative;
+        }
+        
+        .nav-tab a {
+            display: inline-flex;
+            align-items: center;
+            height: 100%;
+            padding: 0 20px;
+            color: var(--neutral-gray);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .nav-tab a:hover {
+            color: var(--accent-blue);
+            background: rgba(0, 102, 204, 0.05);
+        }
+        
+        .nav-tab a.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+        
+        /* Pipe separators */
+        .nav-tab:not(:last-child)::after {
+            content: "|";
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ddd;
+            font-size: 16px;
+        }
+        
+        /* Components Dropdown */
+        .components-dropdown {
+            position: relative;
+        }
+        
+        .components-button {
+            background: transparent;
+            border: none;
+            color: var(--neutral-gray);
+            font-size: 15px;
+            font-weight: 500;
+            padding: 10px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            border-radius: 4px;
+        }
+        
+        .components-button:hover {
+            background: rgba(0, 102, 204, 0.05);
+            color: var(--accent-blue);
+        }
+        
+        .components-button::after {
+            content: "▼";
+            font-size: 10px;
+        }
+        
+        .components-dropdown.active .components-button::after {
+            transform: rotate(180deg);
+        }
+        
+        .components-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--white);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            padding: 10px 0;
+            min-width: 320px;
+            display: none;
+            margin-top: 5px;
+        }
+        
+        .components-dropdown.active .components-menu {
+            display: block;
+        }
+        
+        .component-link {
+            display: block;
+            padding: 12px 25px;
+            color: var(--neutral-gray);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .component-link:hover {
+            background: var(--light-gray);
+            color: var(--accent-blue);
+        }
+        
+        /* Mobile Menu Toggle */
+        .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 10px;
+        }
+        
+        .mobile-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--primary-blue);
+            transition: all 0.3s;
+        }
+        
+        .mobile-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translateY(7px);
+        }
+        
+        .mobile-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .mobile-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translateY(-7px);
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding-top: 70px;
+        }
+        
+        /* Hero Section */
+        .hero {
+            position: relative;
+            height: 600px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #003F87 0%, #0066CC 100%);
+        }
+        
+        .hero-video {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><rect fill="%23E0E0E0"/><text x="50%" y="50%" font-family="Arial" font-size="40" fill="%23999" text-anchor="middle" dy=".3em">Convention Center Video</text></svg>') center/cover;
+            opacity: 0.9;
+        }
+        
+        .hero-content {
+            position: relative;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .hero-headline {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--white);
+            margin-bottom: 20px;
+            max-width: 600px;
+            line-height: 1.2;
+        }
+        
+        .hero-sub {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            max-width: 500px;
+        }
+        
+        .hero-cta {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .cta-button {
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .cta-primary {
+            background: var(--accent-blue);
+            color: var(--white);
+        }
+        
+        .cta-primary:hover {
+            background: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+        
+        .cta-secondary {
+            background: transparent;
+            color: var(--white);
+            border: 2px solid var(--white);
+        }
+        
+        .cta-secondary:hover {
+            background: var(--white);
+            color: var(--accent-blue);
+        }
+        
+        /* Metrics Section */
+        .metrics {
+            padding: 80px 20px;
+            background: var(--light-gray);
+        }
+        
+        .metrics-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .metric-card {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .metric-value {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+        }
+        
+        .metric-label {
+            font-size: 16px;
+            color: var(--neutral-gray);
+        }
+        
+        /* Overview / Master Plan Section */
+        .master-plan {
+            padding: 80px 20px;
+        }
+        
+        .section-title {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--primary-blue);
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .plan-cards {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        .plan-card {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .plan-card-image {
+            height: 200px;
+            background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: var(--accent-blue);
+        }
+        
+        .plan-card-content {
+            padding: 25px;
+        }
+        
+        .plan-card-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+        
+        .plan-card-description {
+            color: var(--neutral-gray);
+            line-height: 1.5;
+        }
+        
+        /* News Section */
+        .news-events {
+            padding: 80px 20px;
+            background: var(--white);
+        }
+        
+        .news-events-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+        }
+        
+        .news-section, .events-section {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .section-header h3 {
+            font-size: 24px;
+            color: var(--primary-blue);
+        }
+        
+        .view-all-link {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .news-item, .event-item {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .news-item:last-child, .event-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-date {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+        
+        .item-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--neutral-gray);
+            margin-bottom: 8px;
+        }
+        
+        .item-excerpt {
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        /* Construction Updates */
+        .construction {
+            padding: 80px 20px;
+            background: var(--light-gray);
+        }
+        
+        .construction-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .construction-tile {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+        }
+        
+        .live-cam {
+            height: 250px;
+            background: #333;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 18px;
+            position: relative;
+        }
+        
+        .live-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: red;
+            color: var(--white);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        /* Economic Impact Section */
+        .impact {
+            padding: 80px 20px;
+            background: var(--white);
+        }
+        
+        .impact-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 60px;
+            align-items: center;
+        }
+        
+        .impact-stats {
+            display: grid;
+            gap: 30px;
+        }
+        
+        .impact-stat {
+            padding: 20px;
+            border-left: 4px solid var(--accent-blue);
+            background: var(--light-gray);
+            border-radius: 8px;
+        }
+        
+        .impact-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--accent-blue);
+            margin-bottom: 5px;
+        }
+        
+        .impact-label {
+            color: var(--neutral-gray);
+        }
+        
+        .impact-content h3 {
+            font-size: 28px;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+        }
+        
+        .impact-content p {
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        /* Public Engagement Section */
+        .engagement {
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        }
+        
+        .engagement-carousel {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        
+        .carousel-container {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+        
+        .carousel-item {
+            min-width: 100%;
+            padding: 40px;
+            background: var(--white);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        
+        .you-said {
+            padding: 20px;
+            background: var(--light-gray);
+            border-left: 4px solid var(--accent-blue);
+            border-radius: 8px;
+        }
+        
+        .we-did {
+            padding: 20px;
+            background: #e8f5e9;
+            border-left: 4px solid var(--secondary-green);
+            border-radius: 8px;
+        }
+        
+        /* FAQs Section */
+        .faqs {
+            padding: 80px 20px;
+            background: var(--white);
+        }
+        
+        .faqs-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .faq-item {
+            background: var(--light-gray);
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .faq-question {
+            font-weight: 500;
+            color: var(--primary-blue);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-question::after {
+            content: "+";
+            font-size: 24px;
+            font-weight: 300;
+            transition: transform 0.3s;
+        }
+        
+        .faq-item.active .faq-question::after {
+            transform: rotate(45deg);
+        }
+        
+        .faq-answer {
+            padding-top: 15px;
+            display: none;
+            color: var(--neutral-gray);
+            line-height: 1.8;
+        }
+        
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        
+        /* Contact Section */
+        .contact {
+            padding: 80px 20px;
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+        
+        .contact-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .contact-container h2 {
+            color: var(--white);
+            margin-bottom: 30px;
+        }
+        
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-top: 50px;
+        }
+        
+        .contact-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .contact-card h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .contact-card p {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .contact-card a {
+            color: var(--white);
+            text-decoration: underline;
+        }
+        
+        /* Component Pages */
+        .component-page {
+            display: none;
+            padding-top: 70px;
+        }
+        
+        .component-page.active {
+            display: block;
+        }
+        
+        .component-nav {
+            background: var(--white);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 70px;
+            z-index: 900;
+        }
+        
+        .component-nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .component-nav-list {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+            padding: 20px 0;
+        }
+        
+        .component-nav-item {
+            color: var(--neutral-gray);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .component-nav-item:hover,
+        .component-nav-item.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+        
+        .component-section {
+            padding: 80px 20px;
+        }
+        
+        .component-overview {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        
+        .overview-content h2 {
+            font-size: 36px;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+        }
+        
+        .overview-bullets {
+            list-style: none;
+            margin-top: 30px;
+        }
+        
+        .overview-bullets li {
+            padding: 15px 0;
+            padding-left: 40px;
+            position: relative;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .overview-bullets li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--secondary-green);
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .renderings-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .rendering-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .rendering-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .rendering-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #e0e0e0, #f0f0f0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #999;
+        }
+        
+        .timeline {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            padding: 40px 0;
+        }
+        
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
+        }
+        
+        .timeline-item {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+        
+        .timeline-content {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            width: 45%;
+            position: relative;
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-right: auto;
+            margin-left: 0;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-left: auto;
+            margin-right: 0;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            top: 30px;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: var(--accent-blue);
+            border: 4px solid var(--white);
+            border-radius: 50%;
+            box-shadow: var(--shadow);
+        }
+        
+        .timeline-date {
+            font-size: 14px;
+            color: var(--accent-blue);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .timeline-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .status-design {
+            background: #FFF3CD;
+            color: #856404;
+        }
+        
+        .status-procurement {
+            background: #D1ECF1;
+            color: #0C5460;
+        }
+        
+        .status-construction {
+            background: #D4EDDA;
+            color: #155724;
+        }
+        
+        /* Footer */
+        footer {
+            background: #1a1a1a;
+            color: var(--white);
+            padding: 60px 20px 30px;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-section h4 {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            line-height: 2;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--white);
+        }
+        
+        .partner-logos {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .partner-logo {
+            width: 100px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        
+        .social-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .nav-tabs {
+                display: none;
+                position: fixed;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: var(--white);
+                flex-direction: column;
+                box-shadow: var(--shadow);
+                padding: 20px;
+            }
+            
+            .nav-tabs.active {
+                display: flex;
+            }
+            
+            .nav-tab {
+                width: 100%;
+                height: auto;
+            }
+            
+            .nav-tab a {
+                width: 100%;
+                padding: 15px;
+                justify-content: flex-start;
+            }
+            
+            .nav-tab::after {
+                display: none;
+            }
+            
+            .mobile-toggle {
+                display: flex;
+            }
+            
+            .components-dropdown {
+                display: none;
+            }
+            
+            .hero-headline {
+                font-size: 36px;
+            }
+            
+            .hero-video {
+                width: 100%;
+                opacity: 0.3;
+            }
+            
+            .news-events-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .impact-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .carousel-item {
+                grid-template-columns: 1fr;
+            }
+            
+            .component-overview {
+                grid-template-columns: 1fr;
+            }
+            
+            .timeline::before {
+                left: 20px;
+            }
+            
+            .timeline-content {
+                width: calc(100% - 60px);
+                margin-left: 60px !important;
+            }
+            
+            .timeline-dot {
+                left: 20px;
+            }
+            
+            .component-nav-list {
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-bottom: 10px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-headline {
+                font-size: 28px;
+            }
+            
+            .section-title {
+                font-size: 28px;
+            }
+            
+            .metric-value {
+                font-size: 36px;
+            }
+            
+            .plan-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .construction-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+<style>
+.site-header, header{ display:flex; align-items:center; }
+.site-logo img{ max-height:64px; height:64px; width:auto; object-fit:contain; }
+</style><style>
+
+/* Remove previous square/icon before the logo and ensure sizing */
+.nav-logo::before{ content:none !important; background:none !important; }
+/* Keep header logo aligned */
+.nav-logo img{ max-height:64px; height:64px; width:auto; object-fit:contain; }
+
+</style>
+<style>
+.nav-logo::before{ content:none !important; background:none !important; }
+.nav-logo img{ max-height:64px; height:64px; width:auto; object-fit:contain; }
+</style></head>
+<body>
+<header class="site-header" style="position:sticky;top:0;z-index:1000;background:#fff;padding:12px 20px;box-shadow:0 1px 4px rgba(0,0,0,.08);display:flex;align-items:center;"><a href="index.html" class="site-logo" style="display:inline-flex;align-items:center;text-decoration:none;"></a></header>
+
+    <!-- Navigation -->
+    <nav class="global-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo"><img src="https://raw.githubusercontent.com/kavin84/kbhccdmasterplan/main/KBHCCD%20Master%20Plan_Logo_Horizontal_COLOR_PNG.png" alt="KBHCCD Logo" style="height:64px;width:auto;object-fit:contain;display:block;"></a>
+            
+            <ul class="nav-tabs" id="navTabs">
+                <li class="nav-tab"><a href="#overview">Overview</a></li>
+                <li class="nav-tab"><a href="#news">News</a></li>
+                <li class="nav-tab"><a href="#events">Events</a></li>
+                <li class="nav-tab"><a href="#engagement">Public Engagement</a></li>
+                <li class="nav-tab"><a href="#updates">Construction Updates</a></li>
+                <li class="nav-tab"><a href="#faqs">FAQs</a></li>
+                <li class="nav-tab"><a href="#contact">Contact</a></li>
+            </ul>
+            
+            <div class="components-dropdown" id="componentsDropdown">
+                <button class="components-button">
+                    Master Plan Components
+                </button>
+                <div class="components-menu">
+                    <a href="#component1" class="component-link" onclick="showComponent(1); return false;" style="font-weight: bold; background: rgba(0, 102, 204, 0.05);">→ Convention Center Expansion (Demo)</a>
+                    <a href="#component2" class="component-link" onclick="showComponent(2); return false;">Dallas Memorial Auditorium</a>
+                    <a href="#component3" class="component-link" onclick="showComponent(3); return false;">The Black Academy of Arts & Letters (TBAAL)</a>
+                    <a href="#component4" class="component-link" onclick="showComponent(4); return false;">Pioneer Plaza / Public Realm</a>
+                </div>
+            </div>
+            
+            <div class="mobile-toggle" id="mobileToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <div class="hero-video" role="img" aria-label="Convention Center visualization"></div>
+            <div class="hero-content">
+                <h1 class="hero-headline">Reimagining the Heart of Dallas</h1>
+                <p class="hero-sub">Connecting communities, growing our economy, and welcoming the world.</p>
+                <div class="hero-cta">
+                    <a href="#overview" class="cta-button cta-primary">See the Master Plan</a>
+                    <a href="#updates" class="cta-button cta-secondary">Construction Updates</a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- At-a-Glance Metrics -->
+        <section class="metrics" aria-labelledby="metrics-title">
+            <h2 id="metrics-title" class="sr-only">Project Metrics</h2>
+            <div class="metrics-container">
+                <div class="metric-card">
+                    <div class="metric-value">$2.8B</div>
+                    <div class="metric-label">Economic Impact</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">2029</div>
+                    <div class="metric-label">Grand Opening</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">15,000</div>
+                    <div class="metric-label">Jobs Created</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">365</div>
+                    <div class="metric-label">Acres Transformed</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Explore the Master Plan / Overview -->
+        <section class="master-plan" id="overview" aria-labelledby="master-plan-title">
+            <h2 id="master-plan-title" class="section-title">Explore the Master Plan</h2>
+            <div class="plan-cards">
+                <article class="plan-card" onclick="showComponent(1)" style="border: 2px solid var(--accent-blue); position: relative;">
+                    <div style="position: absolute; top: -10px; right: 10px; background: var(--accent-blue); color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold;">DEMO FOCUS</div>
+                    <div class="plan-card-image">🏢</div>
+                    <div class="plan-card-content">
+                        <h3 class="plan-card-title">Convention Center Expansion</h3>
+                        <p class="plan-card-description">Adding approximately 500,000 sq ft of flexible event space with state-of-the-art technology, bringing the facility to ~2.5 million sq ft total with a 100,000+ sq ft ballroom.</p>
+                    </div>
+                </article>
+                <article class="plan-card" onclick="showComponent(2)">
+                    <div class="plan-card-image">🎭</div>
+                    <div class="plan-card-content">
+                        <h3 class="plan-card-title">Dallas Memorial Auditorium</h3>
+                        <p class="plan-card-description">Renovating this 1957 historic venue to serve as a premier performing arts center with modern lighting, sound, and accessibility features while preserving its classic façade.</p>
+                    </div>
+                </article>
+                <article class="plan-card" onclick="showComponent(3)">
+                    <div class="plan-card-image">🎨</div>
+                    <div class="plan-card-content">
+                        <h3 class="plan-card-title">The Black Academy of Arts & Letters</h3>
+                        <p class="plan-card-description">Upgrading and expanding TBAAL's theater and gallery spaces to provide a larger platform for African American arts and cultural programming.</p>
+                    </div>
+                </article>
+                <article class="plan-card" onclick="showComponent(4)">
+                    <div class="plan-card-image">🤠</div>
+                    <div class="plan-card-content">
+                        <h3 class="plan-card-title">Pioneer Plaza / Public Realm</h3>
+                        <p class="plan-card-description">Enhancing the iconic cattle-drive sculptures site plus adding a new deck park over I-30, creating 50+ acres of parks and plazas to reconnect downtown with The Cedars.</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+        
+        <!-- News & Events -->
+        <section class="news-events" id="news" aria-labelledby="news-events-title">
+            <h2 id="news-events-title" class="section-title">News & Events</h2>
+            <div class="news-events-grid">
+                <div class="news-section">
+                    <div class="section-header">
+                        <h3>News</h3>
+                        <a href="#all-news" class="view-all-link">View All News →</a>
+                    </div>
+                    <article class="news-item" style="border-left: 4px solid var(--secondary-green); padding-left: 15px;">
+                        <div class="item-date">November 12, 2025 <span style="background: red; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; margin-left: 10px;">BREAKING</span></div>
+                        <div class="item-title" style="color: var(--accent-blue);">Demolition of West Wing Begins Today</div>
+                        <p class="item-excerpt">Following months of preparation, crews began demolishing the existing west wing of the Kay Bailey Hutchison Convention Center this morning, marking a major milestone in the expansion project...</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="item-date">October 25, 2025</div>
+                        <div class="item-title">Utility Relocation Complete, Demolition Approved</div>
+                        <p class="item-excerpt">City council gives final approval for west wing demolition following successful completion of all utility relocations...</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="item-date">October 23, 2025</div>
+                        <div class="item-title">Dallas Memorial Auditorium Restoration Begins</div>
+                        <p class="item-excerpt">Historic preservation work commences on the iconic venue's façade and interior, kicking off a multi-year restoration and upgrade effort...</p>
+                    </article>
+                </div>
+                <div class="events-section" id="events">
+                    <div class="section-header">
+                        <h3>Events</h3>
+                        <a href="#all-events" class="view-all-link">View All Events →</a>
+                    </div>
+                    <article class="event-item">
+                        <div class="item-date">November 5, 2025 • 6:00 PM</div>
+                        <div class="item-title">Community Town Hall #12</div>
+                        <p class="item-excerpt">Join us at Dallas City Hall for updates on all master plan components, progress reports, and a Q&A session with the project team...</p>
+                    </article>
+                    <article class="event-item">
+                        <div class="item-date">November 12, 2025 • 10:00 AM <span style="background: var(--secondary-green); color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: 10px;">TODAY</span></div>
+                        <div class="item-title">Pioneer Plaza Design Workshop</div>
+                        <p class="item-excerpt">Share your vision for improvements to this beloved Dallas landmark and help shape the features of the new park and public spaces...</p>
+                    </article>
+                    <article class="event-item">
+                        <div class="item-date">November 18, 2025 • 2:00 PM</div>
+                        <div class="item-title">Arts District Walking Tour</div>
+                        <p class="item-excerpt">Take a guided tour highlighting connections between the TBAAL and Memorial Auditorium projects, and learn how the master plan links to the broader Dallas Arts District...</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Public Engagement -->
+        <section class="engagement" id="engagement" aria-labelledby="engagement-title">
+            <h2 id="engagement-title" class="section-title">Public Engagement Highlight</h2>
+            <div class="engagement-carousel">
+                <div class="carousel-container">
+                    <div class="carousel-item">
+                        <div class="you-said">
+                            <h3 style="color: var(--primary-blue); margin-bottom: 15px;">You Said</h3>
+                            <p>"We need more green spaces and places for families to gather in downtown Dallas."</p>
+                        </div>
+                        <div class="we-did">
+                            <h3 style="color: var(--secondary-green); margin-bottom: 15px;">We Did</h3>
+                            <p>Added 50 acres of parks and plazas, including a new 10-acre central park with playgrounds, splash pads, and event lawns in the heart of downtown.</p>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 30px;">
+                    <a href="#public-engagement-full" class="cta-button cta-primary" style="background: var(--accent-blue); color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; display: inline-block;">Go to Public Engagement Overview</a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Construction Progress -->
+        <section class="construction" id="updates" aria-labelledby="construction-title">
+            <h2 id="construction-title" class="section-title">Construction Progress</h2>
+            <div class="construction-grid">
+                <div class="construction-tile">
+                    <div class="live-cam">
+                        <span class="live-indicator">LIVE</span>
+                        <span>Construction Site Camera Feed</span>
+                    </div>
+                </div>
+                <div class="construction-tile">
+                    <h3 style="margin-bottom: 20px; color: var(--primary-blue);">Latest Milestone</h3>
+                    <p style="font-size: 18px; font-weight: 500; margin-bottom: 10px;">Demolition Has Begun</p>
+                    <p style="color: #666;">Following months of utility relocation and foundational preparation, demolition of the existing west wing of the Kay Bailey Hutchison Convention Center is now underway. Crews began carefully deconstructing structural elements on the Griffin Street side, making way for excavation and deep foundation work. Safety barriers, noise-reduction measures, and pedestrian detours have been implemented to minimize disruption during this critical phase.</p>
+                    <p style="margin-top: 20px; color: var(--accent-blue); font-weight: 500;">Completed: November 12, 2025</p>
+                </div>
+                <div class="construction-tile" style="grid-column: span 2;">
+                    <a href="#all-updates" class="cta-button cta-primary" style="display: inline-block; background: var(--accent-blue); color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none;">View All Updates</a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Economic & Community Impact -->
+        <section class="impact" aria-labelledby="impact-title">
+            <h2 id="impact-title" class="section-title">Economic & Community Impact</h2>
+            <div class="impact-grid">
+                <div class="impact-stats">
+                    <div class="impact-stat">
+                        <div class="impact-number">$450M</div>
+                        <div class="impact-label">Annual Economic Activity</div>
+                    </div>
+                    <div class="impact-stat">
+                        <div class="impact-number">2X</div>
+                        <div class="impact-label">Convention Attendance Growth</div>
+                    </div>
+                    <div class="impact-stat">
+                        <div class="impact-number">75%</div>
+                        <div class="impact-label">Green Space Increase</div>
+                    </div>
+                </div>
+                <div class="impact-content">
+                    <h3>Building Dallas's Future Together</h3>
+                    <p>The Kay Bailey Hutchison Convention Center Dallas Master Plan represents the largest civic investment in Dallas in decades. This transformative project will reshape our downtown core, create thousands of jobs, and establish Dallas as a premier destination for conventions, tourism, and business.</p>
+                    <p>By extending downtown's connectivity and bridging long-standing divides, the plan opens up new opportunities for The Cedars, South Dallas and Southern Dallas communities. Through sustainable design and community-centered planning, we're creating spaces that will serve Dallas residents for generations while attracting millions of visitors annually.</p>
+                    <a href="#full-impact" class="cta-button cta-secondary" style="background: transparent; color: var(--accent-blue); border: 2px solid var(--accent-blue); padding: 12px 30px; border-radius: 25px; text-decoration: none; display: inline-block;">View Full Impact Report</a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- FAQs -->
+        <section class="faqs" id="faqs" aria-labelledby="faqs-title">
+            <div class="faqs-container">
+                <h2 id="faqs-title" class="section-title">Frequently Asked Questions</h2>
+                <div class="faq-item">
+                    <div class="faq-question">When will the entire project be completed?</div>
+                    <div class="faq-answer">
+                        The master plan is on schedule. Major construction is expected to be substantially completed by late 2028, with the new convention center opening in 2029 for events. Grand opening celebrations are planned for 2029 once all components are finished and fully operational. Individual pieces of the project will open in phases – for example, some public spaces and facilities may open earlier – but the full district will be up and running in 2029.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">How can I get involved or provide feedback?</div>
+                    <div class="faq-answer">
+                        We welcome community involvement! There are monthly town hall meetings where you can hear the latest updates and share your input. We also host focused workshops on specific components (e.g. design workshops for Pioneer Plaza improvements) to gather ideas from residents. In addition, you can provide feedback anytime through our online surveys and the project website's feedback form. Be sure to sign up for our email newsletter to receive notifications about public meetings, surveys, and engagement opportunities. Your voice has helped shape this project from the beginning, and we want to continue hearing from you as we move forward.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">Will facilities remain open during construction?</div>
+                    <div class="faq-answer">
+                        Yes. We have carefully phased the project to minimize disruptions to existing operations. The current Kay Bailey Hutchison Convention Center will continue hosting events throughout most of the construction period. The new convention center is being built on a nearby site (just west of the current one) so that the old facility can stay open until the new one is ready – ensuring no gap in service. Major cultural venues like the Memorial Auditorium and TBAAL will remain in place and will have any necessary closure periods carefully coordinated with their event schedules. Downtown Dallas will stay in business even as we build, with construction zones and event operations planned to coexist safely.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">What sustainability features are included?</div>
+                    <div class="faq-answer">
+                        Sustainability is at the forefront of the design. All new facilities are being built to LEED-certified standards, incorporating green building elements such as solar panels for renewable energy, rainwater harvesting systems for irrigation, and energy-efficient HVAC and lighting systems. We are using recycled and locally-sourced materials during construction to lower the project's carbon footprint. Notably, the new convention center will feature bird-friendly design – using fritted bird-safe glass that is subtle to people but visible to birds – to protect migratory bird populations. In addition, the plan adds substantial new green space to downtown, which will help improve air quality, reduce the heat-island effect, and manage stormwater naturally.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">How will this benefit local businesses?</div>
+                    <div class="faq-answer">
+                        The convention center expansion is fundamentally an economic development initiative for Dallas. In the construction phase, the project has ambitious local hiring and contractor targets – prioritizing Dallas-based workers and businesses. Once the new center opens, conservative estimates project roughly $450 million in annual economic activity. 75 major conventions have been booked for the new center in future years, representing about $1.9 billion in total economic impact. Nearly 100 additional groups that hadn't considered Dallas in decades are now interested in bringing their events here. We're also implementing supplier diversity programs to ensure local minority- and women-owned businesses can participate in everything from construction to ongoing operations. The master plan will generate more customers for local businesses, more jobs for our residents, and a stronger tax base for city services.
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Contact -->
+        <section class="contact" id="contact">
+            <div class="contact-container">
+                <h2 class="section-title" style="color: white;">Contact Us</h2>
+                <p style="font-size: 20px; margin-bottom: 40px;">Have questions or want to learn more? We're here to help.</p>
+                <div class="contact-grid">
+                    <div class="contact-card">
+                        <h3>📧 Email</h3>
+                        <p>General Inquiries<br>
+                        <a href="mailto:info@kbhccd.dallas.gov">info@kbhccd.dallas.gov</a></p>
+                    </div>
+                    <div class="contact-card">
+                        <h3>📞 Phone</h3>
+                        <p>Project Information Line<br>
+                        (214) 555-KBHC</p>
+                    </div>
+                    <div class="contact-card">
+                        <h3>📍 Visit</h3>
+                        <p>Information Center<br>
+                        650 S. Griffin St, Dallas, TX 75202</p>
+                    </div>
+                    <div class="contact-card">
+                        <h3>📱 Social</h3>
+                        <p>Follow @DallasKBHCCD<br>
+                        Twitter, Facebook, Instagram<br>
+                        #ReimagineDallas</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Component Subpage (Hidden by default) -->
+    <div id="component-page" class="component-page">
+        <nav class="component-nav" role="navigation" aria-label="Component navigation">
+            <div class="component-nav-container">
+                <ul class="component-nav-list">
+                    <li><a href="#comp-overview" class="component-nav-item active">Overview</a></li>
+                    <li><a href="#comp-renderings" class="component-nav-item">Renderings</a></li>
+                    <li><a href="#comp-timeline" class="component-nav-item">Timeline</a></li>
+                    <li><a href="#comp-progress" class="component-nav-item">Live Progress</a></li>
+                    <li><a href="#comp-events" class="component-nav-item">Events</a></li>
+                    <li><a href="#comp-faqs" class="component-nav-item">FAQs</a></li>
+                </ul>
+            </div>
+        </nav>
+        
+        <!-- Component Overview -->
+        <section id="comp-overview" class="component-section">
+            <div class="component-overview">
+                <div class="overview-content">
+                    <h2 id="component-title">Convention Center Expansion</h2>
+                    <p style="font-size: 18px; line-height: 1.8; margin-bottom: 20px;" id="component-description">
+                        The Convention Center Expansion represents the cornerstone of Dallas's vision for the future. This transformative project will add 500,000 square feet of flexible event space, positioning Dallas among the top convention destinations in North America.
+                    </p>
+                    <div style="background: rgba(0, 102, 204, 0.05); padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid var(--accent-blue);">
+                        <h3 style="color: var(--primary-blue); margin-bottom: 10px; font-size: 18px;">Development Partners</h3>
+                        <p style="margin-bottom: 10px;"><strong>Inspire Dallas</strong> - Awarded master development rights for the convention center expansion project</p>
+                        <p style="margin-bottom: 10px;"><strong>Trinity Alliance</strong> - Selected as strategic partner for infrastructure and connectivity</p>
+                        <p style="margin-bottom: 0;"><strong>Amplify Dallas</strong> - Partner for community engagement and economic development initiatives</p>
+                    </div>
+                    <ul class="overview-bullets" id="component-bullets">
+                        <li><strong>Purpose:</strong> Expand convention capacity to attract larger events and conferences</li>
+                        <li><strong>Economic Benefit:</strong> Generate $300M+ in annual economic activity</li>
+                        <li><strong>Sustainability:</strong> LEED Gold certification with solar panels and rainwater harvesting</li>
+                        <li><strong>Community Access:</strong> Public spaces and local event programming included</li>
+                    </ul>
+                </div>
+                <div style="background: linear-gradient(135deg, #f0f0f0, #e0e0e0); height: 400px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #999;">
+                    <span id="component-image">Expansion Rendering</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Renderings Gallery -->
+        <section id="comp-renderings" class="component-section">
+            <h2 class="section-title">Renderings Gallery</h2>
+            <div class="renderings-gallery">
+                <div class="rendering-item">
+                    <div class="rendering-image">Exterior View</div>
+                </div>
+                <div class="rendering-item">
+                    <div class="rendering-image">Main Hall</div>
+                </div>
+                <div class="rendering-item">
+                    <div class="rendering-image">Exhibition Space</div>
+                </div>
+                <div class="rendering-item">
+                    <div class="rendering-image">Rooftop Terrace</div>
+                </div>
+                <div class="rendering-item">
+                    <div class="rendering-image">Grand Ballroom</div>
+                </div>
+                <div class="rendering-item">
+                    <div class="rendering-image">Plaza Connection</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Timeline -->
+        <section id="comp-timeline" class="component-section">
+            <h2 class="section-title">Timeline & Status</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Q2 2025</div>
+                        <div class="timeline-title">Final Concept Site Map Presented</div>
+                        <p>Final concept site map was presented to city council</p>
+                        <span class="status-badge status-design">Completed</span>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Q3 2025</div>
+                        <div class="timeline-title">Development Partners Selected</div>
+                        <p>Inspire Dallas awarded master development rights. Trinity Alliance and Amplify Dallas selected as key partners</p>
+                        <span class="status-badge status-procurement">Completed</span>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Q3 2025</div>
+                        <div class="timeline-title">Procurement & Bidding</div>
+                        <p>General contractor selected, subcontractors engaged</p>
+                        <span class="status-badge status-procurement">Completed</span>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">November 2025 - Current</div>
+                        <div class="timeline-title">Demolition Phase</div>
+                        <p>West wing demolition underway with careful structural deconstruction</p>
+                        <span class="status-badge status-construction">In Progress</span>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Q1 2026</div>
+                        <div class="timeline-title">Foundation & Structure</div>
+                        <p>Deep foundation work and steel framework construction</p>
+                        <span class="status-badge status-design">Upcoming</span>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Q4 2028</div>
+                        <div class="timeline-title">Substantial Completion</div>
+                        <p>Building ready for final inspections and fit-out</p>
+                        <span class="status-badge status-design">Upcoming</span>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">2029</div>
+                        <div class="timeline-title">Grand Opening</div>
+                        <p>First events and public celebration</p>
+                        <span class="status-badge status-design">Planned</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Component Live Progress -->
+        <section id="comp-progress" class="component-section">
+            <h2 class="section-title">Live Progress Updates</h2>
+            <div class="construction-grid">
+                <div class="construction-tile">
+                    <h3 style="margin-bottom: 20px; color: var(--primary-blue);">November 12, 2025 Update</h3>
+                    <p style="margin-bottom: 15px;" id="progress-update">Demolition of existing west wing underway. Crews carefully deconstructing structural elements on Griffin Street side. Excavation and deep foundation work to begin following demolition phase.</p>
+                    <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+                        <strong>Traffic Notice:</strong> <span id="traffic-notice">Griffin Street closed weekdays 7am-6pm for crane operations through November 15.</span>
+                    </div>
+                    <div style="margin-top: 15px; padding: 15px; background: #d4edda; border-left: 4px solid #28a745; border-radius: 4px;">
+                        <strong>Today's Milestone:</strong> Demolition of west wing commenced at 7:00 AM. Safety barriers and noise-reduction measures in place.
+                    </div>
+                </div>
+                <div class="construction-tile">
+                    <div class="live-cam" style="height: 200px;">
+                        <span class="live-indicator">LIVE</span>
+                        <span id="drone-label">Drone Feed - West Wing Demolition</span>
+                    </div>
+                </div>
+                <div class="construction-tile">
+                    <h3 style="margin-bottom: 20px; color: var(--primary-blue);">Progress Photos</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div style="height: 100px; background: #f0f0f0; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #999;">Before Demolition</div>
+                        <div style="height: 100px; background: #f0f0f0; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #999;">Current Status</div>
+                        <div style="height: 100px; background: #f0f0f0; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #999;">Safety Measures</div>
+                        <div style="height: 100px; background: #f0f0f0; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #999;">Site Overview</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Component Events -->
+        <section id="comp-events" class="component-section">
+            <h2 class="section-title"><span id="component-events-title">Component</span> Events</h2>
+            <div class="events-section" style="max-width: 800px; margin: 0 auto; background: var(--white); padding: 40px; border-radius: 12px; box-shadow: var(--shadow);">
+                <article class="event-item" style="padding: 20px 0; border-bottom: 1px solid var(--border-color);">
+                    <div class="item-date">November 15, 2025 • 3:00 PM</div>
+                    <div class="item-title" id="event1-title">Demolition Progress Update Meeting</div>
+                    <p class="item-excerpt" id="event1-desc">Project team presents demolition progress and upcoming excavation phase timeline...</p>
+                </article>
+                <article class="event-item" style="padding: 20px 0; border-bottom: 1px solid var(--border-color);">
+                    <div class="item-date">November 20, 2025 • 11:00 AM</div>
+                    <div class="item-title" id="event2-title">Safety & Traffic Management Forum</div>
+                    <p class="item-excerpt" id="event2-desc">Updates on pedestrian routes and safety measures during demolition phase...</p>
+                </article>
+                <div style="text-align: center; margin-top: 30px;">
+                    <a href="#all-events" class="cta-button cta-secondary" style="background: transparent; color: var(--accent-blue); border: 2px solid var(--accent-blue); padding: 12px 30px; border-radius: 25px; text-decoration: none; display: inline-block;">View All Events</a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Component FAQs -->
+        <section id="comp-faqs" class="component-section">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="faq-item" style="background: var(--light-gray); margin-bottom: 20px; padding: 20px; border-radius: 8px;">
+                    <div class="faq-question">When will this component be completed?</div>
+                    <div class="faq-answer">The project is scheduled for substantial completion in late 2028, with the grand opening planned for 2029.</div>
+                </div>
+                <div class="faq-item" style="background: var(--light-gray); margin-bottom: 20px; padding: 20px; border-radius: 8px;">
+                    <div class="faq-question">What is the scope of this project?</div>
+                    <div class="faq-answer">This expansion will add 500,000 square feet of flexible event space, bringing the total facility to ~2.5 million square feet, including exhibit halls, meeting rooms, and a 100,000+ sq ft grand ballroom.</div>
+                </div>
+                <div class="faq-item" style="background: var(--light-gray); margin-bottom: 20px; padding: 20px; border-radius: 8px;">
+                    <div class="faq-question">Will the existing convention center remain operational?</div>
+                    <div class="faq-answer">Yes, the existing convention center will continue to operate throughout the construction period. The new facility is being built on a nearby site to ensure no gap in service.</div>
+                </div>
+                <div class="faq-item" style="background: var(--light-gray); margin-bottom: 20px; padding: 20px; border-radius: 8px;">
+                    <div class="faq-question">What sustainability features are included?</div>
+                    <div class="faq-answer">The expansion targets LEED Gold certification and includes solar panels, rainwater harvesting, energy-efficient systems, and bird-safe glass design to protect migratory bird populations.</div>
+                </div>
+                <div style="margin-top: 40px; padding: 30px; background: var(--white); border-radius: 12px; box-shadow: var(--shadow); text-align: center;">
+                    <h3 style="color: var(--primary-blue); margin-bottom: 15px;">Have More Questions?</h3>
+                    <p style="margin-bottom: 20px;">Contact our project team for additional information</p>
+                    <a href="mailto:info@kbhccd.dallas.gov" class="cta-button cta-primary" style="background: var(--accent-blue); color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; display: inline-block;">Contact Us</a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Back to Homepage Button -->
+        <div style="text-align: center; padding: 40px 20px; background: var(--light-gray);">
+            <button onclick="showHomepage()" class="cta-button cta-primary" style="background: var(--accent-blue); color: white; padding: 12px 30px; border-radius: 25px; border: none; cursor: pointer;">← Back to Master Plan Overview</button>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer role="contentinfo">
+        <div class="footer-content">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h4>Project Partners</h4>
+                    <div class="partner-logos" style="display: block;">
+                        <p style="font-size: 14px; line-height: 1.6; opacity: 0.9;">
+                            City of Dallas • Inspire Dallas • VisitDallas • Oak View Group (OVG360)
+                        </p>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#procurement">Procurement Opportunities</a></li>
+                        <li><a href="#media">Media Resources</a></li>
+                        <li><a href="#documents">Project Documents</a></li>
+                        <li><a href="#contact">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Accessibility</h4>
+                    <ul class="footer-links">
+                        <li><a href="#accessibility">Accessibility Statement</a></li>
+                        <li><a href="#language">Language Options</a></li>
+                        <li><a href="#ada">ADA Compliance</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Stay Connected</h4>
+                    <ul class="footer-links">
+                        <li><a href="#newsletter">Email Newsletter</a></li>
+                        <li><a href="#alerts">Text Alerts (Text KBHCCD to Dallas411)</a></li>
+                        <li><a href="#social">Social Media @DallasKBHCCD</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 City of Dallas. All rights reserved. • #ReimagineDallas</p>
+                <div class="social-links">
+                    <a href="#" class="social-link" aria-label="Facebook">f</a>
+                    <a href="#" class="social-link" aria-label="Twitter">X</a>
+                    <a href="#" class="social-link" aria-label="Instagram">i</a>
+                    <a href="#" class="social-link" aria-label="LinkedIn">in</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // DEMO CONTEXT: November 12, 2025 - Component 1 (Convention Center Expansion) Demo
+        // To start demo: Open page with ?demo=true or click Component 1 card
+        
+        // Component data
+        const componentData = {
+            1: {
+                title: "Convention Center Expansion",
+                description: "The Convention Center Expansion will add approximately 500,000 square feet of new, flexible event space, bringing the facility to ~2.5 million square feet total. This transformative project positions Dallas among the top convention destinations in North America with vast modern exhibit halls, upgraded meeting rooms, and an iconic 100,000+ sq ft ballroom.",
+                bullets: [
+                    "<strong>Purpose:</strong> Expand convention capacity to attract larger events and conferences",
+                    "<strong>Economic Benefit:</strong> Generate $450M+ in annual economic activity",
+                    "<strong>Sustainability:</strong> LEED Gold certification with solar panels, rainwater harvesting, and bird-safe glass",
+                    "<strong>Community Access:</strong> Public spaces and local event programming included"
+                ],
+                image: "Convention Center Rendering",
+                progress: "Demolition of existing west wing underway. Crews carefully deconstructing structural elements on Griffin Street side. Excavation and deep foundation work to begin following demolition phase.",
+                traffic: "Griffin Street closed weekdays 7am-6pm for crane operations through November 15.",
+                drone: "Drone Feed - West Wing Demolition",
+                event1Title: "Demolition Progress Update Meeting",
+                event1Desc: "Project team presents demolition progress and upcoming excavation phase timeline...",
+                event2Title: "Safety & Traffic Management Forum",
+                event2Desc: "Updates on pedestrian routes and safety measures during demolition phase..."
+            },
+            2: {
+                title: "Dallas Memorial Auditorium",
+                description: "Originally opened in 1957, the historic Dallas Memorial Auditorium will undergo a comprehensive renovation to restore its grandeur while adding modern amenities. The auditorium's classic façade and character will be preserved while receiving cutting-edge lighting, sound, and accessibility features to host concerts, theater, and community events.",
+                bullets: [
+                    "<strong>Purpose:</strong> Preserve and enhance this architectural landmark",
+                    "<strong>Capacity:</strong> Increased seating with modern amenities",
+                    "<strong>Features:</strong> New acoustics, lighting, sound, and backstage facilities",
+                    "<strong>Heritage:</strong> Maintaining historic character while adding modern functionality"
+                ],
+                image: "Memorial Auditorium Rendering",
+                progress: "Historic facade restoration 60% complete. Interior renovation beginning Q1 2026.",
+                traffic: "Canton Street parking restricted during facade work.",
+                drone: "Drone Feed - Memorial Auditorium",
+                event1Title: "Historic Preservation Update",
+                event1Desc: "Progress on restoration of the Memorial Auditorium...",
+                event2Title: "Performing Arts Partnership Meeting",
+                event2Desc: "Collaboration opportunities for arts organizations..."
+            },
+            3: {
+                title: "The Black Academy of Arts & Letters (TBAAL)",
+                description: "TBAAL's theater and gallery spaces, which are part of the convention center complex, will be expanded and modernized. These upgrades will provide a larger platform for African American arts and letters, ensuring that TBAAL can broaden its programming and continue enriching Dallas's cultural life for generations to come.",
+                bullets: [
+                    "<strong>Purpose:</strong> Expand cultural programming and community access",
+                    "<strong>New Facilities:</strong> Expanded theater and gallery spaces",
+                    "<strong>Programs:</strong> Enhanced arts education and professional development",
+                    "<strong>Community Impact:</strong> Serving expanded audiences with broader programming"
+                ],
+                image: "TBAAL Rendering",
+                progress: "Foundation work complete. Structural steel erection beginning November 2025.",
+                traffic: "Flora Street temporary closures during deliveries.",
+                drone: "Drone Feed - TBAAL",
+                event1Title: "Arts Education Expansion Forum",
+                event1Desc: "New programs at The Black Academy of Arts and Letters...",
+                event2Title: "Community Partnership Meeting",
+                event2Desc: "Collaboration opportunities with local organizations..."
+            },
+            4: {
+                title: "Pioneer Plaza / Public Realm",
+                description: "Pioneer Plaza, home to Dallas's iconic cattle-drive sculptures, will be enhanced with improved accessibility, landscaping, and amenities. The plan includes a new 'deck park' bridging over I-30 to reconnect downtown with The Cedars neighborhood, plus 50+ acres of new parks and plazas including a 10-acre central park with playgrounds, splash pads, and event lawns.",
+                bullets: [
+                    "<strong>Purpose:</strong> Create green spaces and reconnect neighborhoods",
+                    "<strong>Enhancements:</strong> New deck park over I-30, pathways, lighting, and amenities",
+                    "<strong>Green Space:</strong> 50+ acres of new parks and plazas",
+                    "<strong>Programming:</strong> Family-friendly gathering places and outdoor events"
+                ],
+                image: "Pioneer Plaza Rendering",
+                progress: "Design phase complete. Construction to begin Q2 2026.",
+                traffic: "No current traffic impacts.",
+                drone: "Drone Feed - Pioneer Plaza",
+                event1Title: "Plaza Enhancement Workshop",
+                event1Desc: "Community input on Pioneer Plaza improvements...",
+                event2Title: "Public Art Conservation Meeting",
+                event2Desc: "Preserving the bronze sculpture collection..."
+            }
+        };
+        
+        // Auto-show Component 1 for demo on page load (November 12, 2025 Demo)
+        window.addEventListener('DOMContentLoaded', function() {
+            // Check if URL has a demo parameter or if it's the demo date
+            const urlParams = new URLSearchParams(window.location.search);
+            const isDemo = urlParams.get('demo') === 'true';
+            const showComponentDemo = urlParams.get('component');
+            
+            // Show demo instructions
+            if (isDemo || showComponentDemo === '1') {
+                // Create demo instructions modal
+                const demoModal = document.createElement('div');
+                demoModal.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: white;
+                    padding: 30px;
+                    border-radius: 12px;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                    z-index: 10000;
+                    max-width: 500px;
+                    text-align: center;
+                `;
+                
+                demoModal.innerHTML = `
+                    <h2 style="color: var(--primary-blue); margin-bottom: 20px;">📅 November 12, 2025 Demo</h2>
+                    <h3 style="color: var(--accent-blue); margin-bottom: 15px;">Component 1: Convention Center Expansion</h3>
+                    <p style="margin-bottom: 20px; line-height: 1.6;">Welcome to the KBHCCD Master Plan demonstration. The demo will begin with the Convention Center Expansion component.</p>
+                    <div style="background: var(--light-gray); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <strong>Demo Navigation:</strong><br>
+                        • Use the "Master Plan Components" dropdown to switch components<br>
+                        • Click navigation tabs to explore sections<br>
+                        • Logo returns to main overview
+                    </div>
+                    <button onclick="this.parentElement.style.display='none'; showComponent(1);" style="background: var(--accent-blue); color: white; padding: 12px 30px; border: none; border-radius: 25px; cursor: pointer; font-size: 16px;">Start Demo</button>
+                    <button onclick="this.parentElement.style.display='none';" style="margin-left: 10px; background: transparent; color: var(--neutral-gray); padding: 12px 30px; border: 2px solid var(--border-color); border-radius: 25px; cursor: pointer; font-size: 16px;">Browse Site</button>
+                `;
+                
+                document.body.appendChild(demoModal);
+                
+                // Auto-start after 3 seconds if no action
+                setTimeout(() => {
+                    if (demoModal.style.display !== 'none') {
+                        demoModal.style.display = 'none';
+                        showComponent(1);
+                    }
+                }, 5000);
+            }
+        });
+        
+        // Show component page function
+        function showComponent(componentNum) {
+            const data = componentData[componentNum];
+            if (!data) return;
+            
+            // Hide homepage
+            document.querySelector('main').style.display = 'none';
+            
+            // Show component page
+            document.getElementById('component-page').classList.add('active');
+            
+            // Update content
+            document.getElementById('component-title').textContent = data.title;
+            document.getElementById('component-description').textContent = data.description;
+            document.getElementById('component-bullets').innerHTML = data.bullets.map(b => `<li>${b}</li>`).join('');
+            document.getElementById('component-image').textContent = data.image;
+            document.getElementById('progress-update').textContent = data.progress;
+            document.getElementById('traffic-notice').textContent = data.traffic;
+            document.getElementById('drone-label').textContent = data.drone;
+            document.getElementById('component-events-title').textContent = data.title;
+            document.getElementById('event1-title').textContent = data.event1Title;
+            document.getElementById('event1-desc').textContent = data.event1Desc;
+            document.getElementById('event2-title').textContent = data.event2Title;
+            document.getElementById('event2-desc').textContent = data.event2Desc;
+            
+            // Close dropdown
+            document.getElementById('componentsDropdown').classList.remove('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+            
+            // Log for demo
+            console.log(`Now showing: Component ${componentNum} - ${data.title}`);
+        }
+        
+        // Show homepage function
+        function showHomepage() {
+            document.querySelector('main').style.display = 'block';
+            document.getElementById('component-page').classList.remove('active');
+            window.scrollTo(0, 0);
+        }
+        
+        // Component navigation smooth scroll
+        document.querySelectorAll('.component-nav-item').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Update active state
+                document.querySelectorAll('.component-nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Smooth scroll to section
+                const targetId = this.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    const offset = 160; // Account for sticky navs
+                    const targetPosition = targetSection.offsetTop - offset;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Components dropdown
+        const dropdown = document.getElementById('componentsDropdown');
+        const button = dropdown.querySelector('.components-button');
+        
+        button.addEventListener('click', function() {
+            dropdown.classList.toggle('active');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+        
+        // Mobile menu
+        const mobileToggle = document.getElementById('mobileToggle');
+        const navTabs = document.getElementById('navTabs');
+        
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', function() {
+                navTabs.classList.toggle('active');
+                mobileToggle.classList.toggle('active');
+            });
+        }
+        
+        // FAQ accordion
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+        
+        // Active tab highlighting based on scroll
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-tab a');
+        
+        function highlightNavOnScroll() {
+            const scrollY = window.pageYOffset;
+            
+            sections.forEach(section => {
+                const sectionHeight = section.offsetHeight;
+                const sectionTop = section.offsetTop - 100;
+                const sectionId = section.getAttribute('id');
+                
+                if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${sectionId}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', highlightNavOnScroll);
+        
+        // Smooth scroll for nav links
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.getAttribute('href').startsWith('#')) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetSection = document.getElementById(targetId);
+                    
+                    if (targetSection) {
+                        // Close mobile menu if open
+                        navTabs.classList.remove('active');
+                        mobileToggle.classList.remove('active');
+                        
+                        // Scroll to section
+                        const offset = 80;
+                        const targetPosition = targetSection.offsetTop - offset;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+        
+        // Logo click returns to homepage
+        document.querySelector('.nav-logo').addEventListener('click', function(e) {
+            e.preventDefault();
+            showHomepage();
+        });
+    </script>
+</body>
+</html>
