@@ -318,7 +318,10 @@
 
           layersRef.current.districts.push(poly);
 
-          // District number label
+          // District number label (override positions for D2 & D14 whose centroids nearly overlap)
+          const labelPos = dist.d === 2 ? [32.812, -96.825]
+                         : dist.d === 14 ? [32.812, -96.755]
+                         : [dist.c[0], dist.c[1]];
           const label = L.tooltip({
             permanent: true,
             direction: 'center',
@@ -326,7 +329,7 @@
             offset: [0, 0]
           });
           label.setContent(`D${dist.d}`);
-          label.setLatLng([dist.c[0], dist.c[1]]);
+          label.setLatLng(labelPos);
           label.addTo(map);
           layersRef.current.labels.push(label);
         });
