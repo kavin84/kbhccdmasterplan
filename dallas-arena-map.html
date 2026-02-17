@@ -349,6 +349,7 @@
               <span style="color:#94A3B8">${dist.m}</span><br/>
               <span style="color:${dist.sectorColor}">${dist.sector}</span><br/>
               <hr style="border:0;border-top:1px solid #374151;margin:4px 0"/>
+              <span style="color:#64748B;font-size:10px">Distance from district center:</span><br/>
               Downtown: <strong>${dist.dtDist.toFixed(1)} mi</strong> · <span style="color:${dtCov > 0 ? '#4ADE80' : '#64748B'}">${dtCovPct}% covered</span> · <span style="color:#94A3B8">${dtPopReached} residents</span><br/>
               Valley View: <strong>${dist.vvDist.toFixed(1)} mi</strong> · <span style="color:${vvCov > 0 ? '#60A5FA' : '#64748B'}">${vvCovPct}% covered</span> · <span style="color:#94A3B8">${vvPopReached} residents</span><br/>
               Delta: <strong style="color:${dist.delta > 0 ? '#F87171' : '#4ADE80'}">${dist.delta > 0 ? '+' : ''}${dist.delta.toFixed(1)} mi</strong><br/>
