@@ -86,10 +86,61 @@
     const TOTAL_POP = Object.values(DISTRICT_POP).reduce((a,b)=>a+b,0);
     const SOUTHERN_POP = SOUTHERN_DISTRICTS.reduce((s,d)=>s+DISTRICT_POP[d],0);
 
-    // ── Precompute distances ──
+    // ── Point-in-polygon (ray casting) ──
+    function pointInPolygon(lat, lng, polygon) {
+      let inside = false;
+      for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+        const xi = polygon[i][1], yi = polygon[i][0];
+        const xj = polygon[j][1], yj = polygon[j][0];
+        if (((yi > lng) !== (yj > lng)) && (lat < (xj - xi) * (lng - yi) / (yj - yi) + xi)) {
+          inside = !inside;
+        }
+      }
+      return inside;
+    }
+
+    // ── Sample grid points within a district polygon for area coverage estimation ──
+    function sampleDistrictGrid(coords, step) {
+      step = step || 0.004;
+      const polygon = coords[0];
+      let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+      for (let k = 0; k < polygon.length; k++) {
+        const lng = polygon[k][0], lat = polygon[k][1];
+        if (lat < minLat) minLat = lat;
+        if (lat > maxLat) maxLat = lat;
+        if (lng < minLng) minLng = lng;
+        if (lng > maxLng) maxLng = lng;
+      }
+      const points = [];
+      for (let lat = minLat; lat <= maxLat; lat += step) {
+        for (let lng = minLng; lng <= maxLng; lng += step) {
+          if (pointInPolygon(lat, lng, polygon)) {
+            points.push([lat, lng]);
+          }
+        }
+      }
+      return points;
+    }
+
+    // ── Coverage fraction: what share of a district's area falls within radius of a site ──
+    function coverageFraction(sampleDists, radius, site) {
+      if (!sampleDists || sampleDists.length === 0) return 0;
+      let count = 0;
+      for (let i = 0; i < sampleDists.length; i++) {
+        if (sampleDists[i][site] <= radius) count++;
+      }
+      return count / sampleDists.length;
+    }
+
+    // ── Precompute distances (centroid + grid sample points) ──
     const districtData = DISTRICTS.map(d => {
       const dtDist = haversine(d.c[0], d.c[1], DOWNTOWN.lat, DOWNTOWN.lng);
       const vvDist = haversine(d.c[0], d.c[1], VALLEY_VIEW.lat, VALLEY_VIEW.lng);
+      const samplePts = sampleDistrictGrid(d.coords);
+      const sampleDists = samplePts.map(p => ({
+        dt: haversine(p[0], p[1], DOWNTOWN.lat, DOWNTOWN.lng),
+        vv: haversine(p[0], p[1], VALLEY_VIEW.lat, VALLEY_VIEW.lng)
+      }));
       return {
         ...d,
         sector: SECTORS[d.d],
@@ -100,36 +151,43 @@
         isSouthern: SOUTHERN_DISTRICTS.includes(d.d),
         pop: DISTRICT_POP[d.d],
         density: DISTRICT_DENSITY[d.d],
-        area: DISTRICT_AREA[d.d]
+        area: DISTRICT_AREA[d.d],
+        sampleDists
       };
     });
 
-    // ── Color logic ──
+    // ── Color logic (uses area coverage to detect partial overlap) ──
     function getDistrictColor(dist, radius, mode) {
-      const inDT = dist.dtDist <= radius;
-      const inVV = dist.vvDist <= radius;
+      const dtCov = coverageFraction(dist.sampleDists, radius, 'dt');
+      const vvCov = coverageFraction(dist.sampleDists, radius, 'vv');
+      const hasDT = dtCov > 0;
+      const hasVV = vvCov > 0;
 
       if (mode === 'downtown') {
-        return inDT ? '#22C55E' : '#4B5563';
+        return hasDT ? '#22C55E' : '#4B5563';
       }
       if (mode === 'valleyview') {
-        return inVV ? '#3B82F6' : '#4B5563';
+        return hasVV ? '#3B82F6' : '#4B5563';
       }
       // compare mode
-      if (inDT && inVV) return '#22C55E';    // green: both
-      if (inDT && !inVV) return '#DC2626';   // red: loses access
-      if (!inDT && inVV) return '#3B82F6';   // blue: VV only
-      return '#4B5563';                       // gray: neither
+      if (hasDT && hasVV) return '#22C55E';    // green: both
+      if (hasDT && !hasVV) return '#DC2626';   // red: loses access
+      if (!hasDT && hasVV) return '#3B82F6';   // blue: VV only
+      return '#4B5563';                         // gray: neither
     }
 
     function getColorLabel(dist, radius, mode) {
-      const inDT = dist.dtDist <= radius;
-      const inVV = dist.vvDist <= radius;
-      if (mode === 'downtown') return inDT ? 'Within radius' : 'Outside radius';
-      if (mode === 'valleyview') return inVV ? 'Within radius' : 'Outside radius';
-      if (inDT && inVV) return 'Accessible from both sites';
-      if (inDT && !inVV) return 'LOSES access at Valley View';
-      if (!inDT && inVV) return 'Only Valley View';
+      const dtCov = coverageFraction(dist.sampleDists, radius, 'dt');
+      const vvCov = coverageFraction(dist.sampleDists, radius, 'vv');
+      const hasDT = dtCov > 0;
+      const hasVV = vvCov > 0;
+      const dtPct = (dtCov * 100).toFixed(0);
+      const vvPct = (vvCov * 100).toFixed(0);
+      if (mode === 'downtown') return hasDT ? `${dtPct}% within radius` : 'Outside radius';
+      if (mode === 'valleyview') return hasVV ? `${vvPct}% within radius` : 'Outside radius';
+      if (hasDT && hasVV) return `Accessible from both (DT ${dtPct}% / VV ${vvPct}%)`;
+      if (hasDT && !hasVV) return `LOSES access at Valley View (DT ${dtPct}% covered)`;
+      if (!hasDT && hasVV) return `Only Valley View (${vvPct}% covered)`;
       return 'Outside both radii';
     }
 
@@ -144,15 +202,21 @@
       const dtMaxDist = Math.max(...districtData.map(d => d.dtDist));
       const vvMaxDist = Math.max(...districtData.map(d => d.vvDist));
 
-      // Stats
+      // Stats (area-weighted: a district counts if ANY part of its area falls within the radius)
       const stats = useMemo(() => {
-        const inDT = districtData.filter(d => d.dtDist <= radius);
-        const inVV = districtData.filter(d => d.vvDist <= radius);
-        const southernInDT = districtData.filter(d => d.isSouthern && d.dtDist <= radius);
-        const southernInVV = districtData.filter(d => d.isSouthern && d.vvDist <= radius);
-        const southernLosing = districtData.filter(d => d.isSouthern && d.dtDist <= radius && d.vvDist > radius);
-        const popDT = inDT.reduce((s,d) => s + DISTRICT_POP[d.d], 0);
-        const popVV = inVV.reduce((s,d) => s + DISTRICT_POP[d.d], 0);
+        const withCoverage = districtData.map(d => ({
+          ...d,
+          dtCov: coverageFraction(d.sampleDists, radius, 'dt'),
+          vvCov: coverageFraction(d.sampleDists, radius, 'vv')
+        }));
+        const inDT = withCoverage.filter(d => d.dtCov > 0);
+        const inVV = withCoverage.filter(d => d.vvCov > 0);
+        const southernInDT = withCoverage.filter(d => d.isSouthern && d.dtCov > 0);
+        const southernInVV = withCoverage.filter(d => d.isSouthern && d.vvCov > 0);
+        const southernLosing = withCoverage.filter(d => d.isSouthern && d.dtCov > 0 && d.vvCov === 0);
+        // Area-weighted population: proportional to how much of each district falls within the radius circle
+        const popDT = Math.round(withCoverage.reduce((s, d) => s + d.pop * d.dtCov, 0));
+        const popVV = Math.round(withCoverage.reduce((s, d) => s + d.pop * d.vvCov, 0));
         return { inDT:inDT.length, inVV:inVV.length, southernInDT:southernInDT.length, southernInVV:southernInVV.length, southernLosing, popDT, popVV, coverageGap:inDT.length-inVV.length };
       }, [radius]);
 
@@ -166,8 +230,12 @@
 
       const sortedDistricts = useMemo(() => {
         return [...districtData].sort((a, b) => {
-          const aLoses = a.dtDist <= radius && a.vvDist > radius;
-          const bLoses = b.dtDist <= radius && b.vvDist > radius;
+          const aDtCov = coverageFraction(a.sampleDists, radius, 'dt');
+          const aVvCov = coverageFraction(a.sampleDists, radius, 'vv');
+          const bDtCov = coverageFraction(b.sampleDists, radius, 'dt');
+          const bVvCov = coverageFraction(b.sampleDists, radius, 'vv');
+          const aLoses = aDtCov > 0 && aVvCov === 0;
+          const bLoses = bDtCov > 0 && bVvCov === 0;
           if (aLoses && !bLoses) return -1;
           if (!aLoses && bLoses) return 1;
           return b.delta - a.delta;
@@ -214,10 +282,13 @@
         // Draw district polygons
         districtData.forEach(dist => {
           const color = getDistrictColor(dist, radius, mode);
+          const dtCov = coverageFraction(dist.sampleDists, radius, 'dt');
+          const vvCov = coverageFraction(dist.sampleDists, radius, 'vv');
+          const maxCov = Math.max(dtCov, vvCov);
           const latlngs = dist.coords[0].map(c => [c[1], c[0]]);
           const poly = L.polygon(latlngs, {
             fillColor: color,
-            fillOpacity: 0.45,
+            fillOpacity: maxCov > 0 ? 0.2 + 0.35 * maxCov : 0.15,
             color: '#C8A951',
             weight: 1.5,
             opacity: 0.7
@@ -225,17 +296,21 @@
 
           // Hover tooltip
           const statusLabel = getColorLabel(dist, radius, mode);
+          const dtCovPct = (dtCov * 100).toFixed(0);
+          const vvCovPct = (vvCov * 100).toFixed(0);
+          const dtPopReached = Math.round(dist.pop * dtCov).toLocaleString();
+          const vvPopReached = Math.round(dist.pop * vvCov).toLocaleString();
           poly.bindTooltip(
             `<div style="line-height:1.5">
               <strong style="color:#C8A951;font-size:13px">District ${dist.d}</strong><br/>
               <span style="color:#94A3B8">${dist.m}</span><br/>
               <span style="color:${dist.sectorColor}">${dist.sector}</span><br/>
               <hr style="border:0;border-top:1px solid #374151;margin:4px 0"/>
-              Downtown: <strong>${dist.dtDist.toFixed(1)} mi</strong><br/>
-              Valley View: <strong>${dist.vvDist.toFixed(1)} mi</strong><br/>
+              Downtown: <strong>${dist.dtDist.toFixed(1)} mi</strong> · <span style="color:${dtCov > 0 ? '#4ADE80' : '#64748B'}">${dtCovPct}% covered</span> · <span style="color:#94A3B8">${dtPopReached} residents</span><br/>
+              Valley View: <strong>${dist.vvDist.toFixed(1)} mi</strong> · <span style="color:${vvCov > 0 ? '#60A5FA' : '#64748B'}">${vvCovPct}% covered</span> · <span style="color:#94A3B8">${vvPopReached} residents</span><br/>
               Delta: <strong style="color:${dist.delta > 0 ? '#F87171' : '#4ADE80'}">${dist.delta > 0 ? '+' : ''}${dist.delta.toFixed(1)} mi</strong><br/>
               <hr style="border:0;border-top:1px solid #374151;margin:4px 0"/>
-              Pop: <strong>${(dist.pop).toLocaleString()}</strong> &nbsp;|&nbsp; Density: <strong>${(dist.density).toLocaleString()}</strong>/sq mi<br/>
+              Pop: <strong>${(dist.pop).toLocaleString()}</strong> &nbsp;|&nbsp; Density: <strong>${(dist.density).toLocaleString()}</strong>/sq mi &nbsp;|&nbsp; Area: <strong>${dist.area}</strong> sq mi<br/>
               <span style="color:${color};font-weight:600">${statusLabel}</span>
             </div>`,
             { className: 'hover-tooltip', sticky: true, direction: 'right', offset: [12, 0] }
@@ -520,7 +595,7 @@
                 {/* Population coverage */}
                 <div style={{ marginTop: 8 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#94A3B8', marginBottom: 3 }}>
-                    <span>Population Reached (2020 Census)</span>
+                    <span>Population Reached (area-weighted)</span>
                     <span style={{ color: '#C8A951' }}>{((stats.popDT/TOTAL_POP)*100).toFixed(0)}% vs {((stats.popVV/TOTAL_POP)*100).toFixed(0)}%</span>
                   </div>
                   <div style={{ display: 'flex', gap: 4, alignItems: 'center', fontSize: 10 }}>
@@ -607,7 +682,9 @@
                   <span style={{ width: 50, textAlign: 'right' }}>Delta</span>
                 </div>
                 {sortedDistricts.map(dist => {
-                  const losesAccess = dist.dtDist <= radius && dist.vvDist > radius;
+                  const dtCov = coverageFraction(dist.sampleDists, radius, 'dt');
+                  const vvCov = coverageFraction(dist.sampleDists, radius, 'vv');
+                  const losesAccess = dtCov > 0 && vvCov === 0;
                   return (
                     <div key={dist.d} style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -620,10 +697,10 @@
                         <strong style={{ color: dist.sectorColor }}>D{dist.d}</strong>
                         <span style={{ color: '#64748B', fontSize: 9, marginLeft: 3 }}>{dist.sector.split(' ')[0]}</span>
                       </span>
-                      <span style={{ width: 50, textAlign: 'right', color: dist.dtDist <= radius ? '#4ADE80' : '#94A3B8' }}>
+                      <span style={{ width: 50, textAlign: 'right', color: dtCov > 0 ? '#4ADE80' : '#94A3B8' }}>
                         {dist.dtDist.toFixed(1)}
                       </span>
-                      <span style={{ width: 50, textAlign: 'right', color: dist.vvDist <= radius ? '#60A5FA' : '#94A3B8' }}>
+                      <span style={{ width: 50, textAlign: 'right', color: vvCov > 0 ? '#60A5FA' : '#94A3B8' }}>
                         {dist.vvDist.toFixed(1)}
                       </span>
                       <span style={{
@@ -636,7 +713,7 @@
                   );
                 })}
                 <div style={{ fontSize: 9, color: '#475569', marginTop: 8, lineHeight: 1.4 }}>
-                  Haversine straight-line from district centroids. Delta = VV minus DT (positive = farther from Valley View). Red border = loses access if moved to Valley View. Population: 2020 U.S. Census via City of Dallas GIS.
+                  Distances: Haversine straight-line from district centroids. Delta = VV minus DT (positive = farther from Valley View). Red border = loses access if moved to Valley View. Population: 2020 U.S. Census via City of Dallas GIS. Population counts are area-weighted — if 40% of a district's area falls within the radius, 40% of its residents are counted.
                 </div>
               </div>
             </div>
