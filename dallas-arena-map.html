@@ -65,6 +65,9 @@
     };
     const SOUTHERN_DISTRICTS = [1,3,4,5,7,8];
 
+    // ── DART Rail line data (from DART GTFS feed, simplified) ──
+    const DART_RAIL = {"lines":[{"n":"RED","c":"#FD3E3E","p":[[-96.8734,32.7192],[-96.8599,32.7239],[-96.8525,32.728],[-96.8431,32.7321],[-96.8327,32.7343],[-96.8288,32.7332],[-96.824,32.7328],[-96.8222,32.7333],[-96.8109,32.7423],[-96.7964,32.7491],[-96.7941,32.7506],[-96.7915,32.7534],[-96.7857,32.7627],[-96.7856,32.7636],[-96.7866,32.7647],[-96.8,32.7724],[-96.8016,32.7728],[-96.8044,32.7722],[-96.8069,32.7736],[-96.8078,32.7747],[-96.8098,32.7797],[-96.8092,32.7803],[-96.7996,32.7822],[-96.7929,32.7879],[-96.7932,32.8063],[-96.7927,32.809],[-96.7799,32.8335],[-96.7738,32.8388],[-96.7728,32.8413],[-96.7723,32.8468],[-96.7704,32.8519],[-96.765,32.8766],[-96.7648,32.8936],[-96.7661,32.8986],[-96.7652,32.9017],[-96.7625,32.9077],[-96.759,32.9108],[-96.751,32.9195],[-96.7155,32.9753],[-96.7013,33.0068],[-96.7007,33.0368]]},{"n":"BLUE","c":"#198BC3","p":[[-96.5609,32.9046],[-96.5806,32.902],[-96.5831,32.9026],[-96.5869,32.9058],[-96.5895,32.9064],[-96.6004,32.9044],[-96.603,32.9043],[-96.615,32.909],[-96.6277,32.9162],[-96.6317,32.9168],[-96.6551,32.9131],[-96.6654,32.9123],[-96.7202,32.8954],[-96.7225,32.8942],[-96.726,32.8912],[-96.7301,32.8887],[-96.7311,32.8864],[-96.73,32.8817],[-96.7308,32.8779],[-96.7309,32.8743],[-96.7334,32.8684],[-96.734,32.8621],[-96.7326,32.855],[-96.733,32.8526],[-96.7422,32.8463],[-96.7724,32.8392],[-96.7742,32.8384],[-96.7795,32.834],[-96.793,32.8079],[-96.7929,32.7879],[-96.7996,32.7822],[-96.8092,32.7803],[-96.8098,32.7797],[-96.8078,32.7747],[-96.8069,32.7736],[-96.8044,32.7722],[-96.8016,32.7728],[-96.8,32.7724],[-96.7909,32.7672],[-96.7859,32.7624],[-96.7913,32.7536],[-96.7931,32.7515],[-96.7957,32.7495],[-96.8016,32.7466],[-96.8025,32.7456],[-96.8024,32.7414],[-96.8054,32.7219],[-96.8045,32.7189],[-96.8046,32.7125],[-96.7944,32.6969],[-96.7891,32.6848],[-96.7884,32.6791],[-96.7905,32.6735],[-96.7906,32.672],[-96.7874,32.6649],[-96.7878,32.6623],[-96.7892,32.6604],[-96.8029,32.6532]]},{"n":"GREEN","c":"#006F38","p":[[-96.6839,32.7176],[-96.6878,32.7203],[-96.7085,32.7311],[-96.71,32.7328],[-96.7105,32.7366],[-96.7103,32.7392],[-96.705,32.7475],[-96.7038,32.7505],[-96.7038,32.7567],[-96.7044,32.7582],[-96.7056,32.7593],[-96.7139,32.7643],[-96.7164,32.7653],[-96.724,32.7659],[-96.7523,32.7666],[-96.755,32.7672],[-96.7581,32.7688],[-96.7676,32.7764],[-96.7675,32.7785],[-96.7655,32.7831],[-96.7657,32.7839],[-96.7773,32.7869],[-96.7813,32.7867],[-96.7849,32.7858],[-96.7866,32.7848],[-96.7908,32.7878],[-96.7924,32.788],[-96.7996,32.7822],[-96.8076,32.7804],[-96.8094,32.7805],[-96.8144,32.7959],[-96.8187,32.8021],[-96.8213,32.8041],[-96.827,32.8054],[-96.832,32.8103],[-96.833,32.8125],[-96.8334,32.8154],[-96.8328,32.8207],[-96.8344,32.8242],[-96.8513,32.838],[-96.8648,32.8441],[-96.8702,32.846],[-96.8727,32.8477],[-96.8768,32.8522],[-96.8786,32.8578],[-96.8783,32.8616],[-96.8794,32.8668],[-96.9005,32.9358],[-96.9002,32.9408],[-96.9008,32.9435],[-96.9142,32.9629],[-96.9185,32.9727],[-96.9387,32.9936]]},{"n":"ORANGE","c":"#F68B1F","p":[[-97.0395,32.9065],[-97.0394,32.9139],[-97.0388,32.9211],[-97.0382,32.9228],[-97.0361,32.9243],[-97.0328,32.9251],[-97.0297,32.9249],[-97.0267,32.924],[-97.0121,32.9122],[-97.0034,32.9018],[-96.9824,32.8846],[-96.977,32.8761],[-96.9742,32.8753],[-96.9625,32.8753],[-96.9587,32.8767],[-96.9578,32.8809],[-96.9569,32.8817],[-96.9557,32.8821],[-96.9505,32.8819],[-96.9413,32.8785],[-96.9361,32.8754],[-96.9346,32.8696],[-96.9305,32.866],[-96.9285,32.8633],[-96.9285,32.8615],[-96.9266,32.8585],[-96.9264,32.8552],[-96.9125,32.8475],[-96.9057,32.841],[-96.9041,32.841],[-96.902,32.8422],[-96.8878,32.8522],[-96.8823,32.8574],[-96.8793,32.8577],[-96.8782,32.8565],[-96.8766,32.852],[-96.8719,32.8471],[-96.8513,32.838],[-96.8344,32.8242],[-96.8328,32.8207],[-96.8335,32.8149],[-96.8331,32.8124],[-96.832,32.8103],[-96.827,32.8054],[-96.8213,32.8041],[-96.8187,32.8021],[-96.8144,32.7959],[-96.8095,32.7806],[-96.8078,32.7804],[-96.7998,32.7821],[-96.7928,32.7881],[-96.7932,32.8063],[-96.7925,32.8093],[-96.7799,32.8335],[-96.7738,32.8388],[-96.7728,32.8413],[-96.7723,32.8468],[-96.7704,32.8519],[-96.7651,32.8761],[-96.7648,32.8936],[-96.7661,32.8987],[-96.7641,32.9047],[-96.7622,32.908],[-96.759,32.9108],[-96.751,32.9195],[-96.7155,32.9753],[-96.7013,33.0068],[-96.7007,33.0368]]}],"stations":[{"n":"WESTMORELAND STATION","l":"RED","p":[-96.8717,32.7198]},{"n":"HAMPTON STATION","l":"RED","p":[-96.8555,32.7263]},{"n":"TYLER VERNON STATION","l":"RED","p":[-96.8384,32.7331]},{"n":"ZOO STATION","l":"RED","p":[-96.8129,32.7408]},{"n":"8TH & CORINTH STATION","l":"RED","p":[-96.7985,32.7481]},{"n":"CEDARS STATION","l":"RED","p":[-96.7933,32.7686]},{"n":"CONVENTION CENTER STATION","l":"RED","p":[-96.803,32.7725]},{"n":"EBJ UNION STATION","l":"RED","p":[-96.8082,32.7762]},{"n":"WEST END STATION","l":"RED","p":[-96.8054,32.7809]},{"n":"AKARD STATION","l":"RED","p":[-96.8006,32.7819]},{"n":"ST PAUL STATION","l":"RED","p":[-96.797,32.7843]},{"n":"PEARL/ARTS DISTRICT STATION","l":"RED","p":[-96.7943,32.7866]},{"n":"CITYPLACE/UPTOWN STATION","l":"RED","p":[-96.7932,32.8054]},{"n":"SMU/MOCKINGBIRD STATION","l":"RED","p":[-96.7749,32.8378]},{"n":"LOVERS LANE STATION","l":"RED","p":[-96.7718,32.8486]},{"n":"PARK LANE STATION","l":"RED","p":[-96.7659,32.8725]},{"n":"WALNUT HILL STATION","l":"RED","p":[-96.7649,32.8826]},{"n":"FOREST LN STATION","l":"RED","p":[-96.7617,32.9086]},{"n":"LBJ / CENTRAL STATION","l":"RED","p":[-96.7522,32.9183]},{"n":"SPRING VALLEY STATION","l":"RED","p":[-96.7374,32.9409]},{"n":"ARAPAHO CENTER STATION","l":"RED","p":[-96.723,32.9634]},{"n":"GALATYN PARK STATION","l":"RED","p":[-96.711,32.9852]},{"n":"CITYLINE/BUSH STATION","l":"RED","p":[-96.7031,33.0022]},{"n":"12TH STREET STATION","l":"RED","p":[-96.7011,33.0144]},{"n":"DOWNTOWN PLANO STATION","l":"RED","p":[-96.7009,33.0209]},{"n":"PARKER ROAD STATION","l":"RED","p":[-96.7007,33.0335]},{"n":"DOWNTOWN ROWLETT STATION","l":"BLUE","p":[-96.5634,32.9041]},{"n":"DOWNTOWN GARLAND STATION","l":"BLUE","p":[-96.6354,32.9163]},{"n":"FOREST / JUPITER STATION","l":"BLUE","p":[-96.6795,32.9081]},{"n":"LBJ / SKILLMAN STATION","l":"BLUE","p":[-96.7121,32.8979]},{"n":"LAKE HIGHLANDS STATION","l":"BLUE","p":[-96.7305,32.8795]},{"n":"WHITE ROCK STATION","l":"BLUE","p":[-96.7327,32.8558]},{"n":"SMU/MOCKINGBIRD STATION","l":"BLUE","p":[-96.7749,32.8378]},{"n":"CITYPLACE/UPTOWN STATION","l":"BLUE","p":[-96.7932,32.8054]},{"n":"PEARL/ARTS DISTRICT STATION","l":"BLUE","p":[-96.7943,32.7866]},{"n":"ST PAUL STATION","l":"BLUE","p":[-96.797,32.7843]},{"n":"AKARD STATION","l":"BLUE","p":[-96.8006,32.7819]},{"n":"WEST END STATION","l":"BLUE","p":[-96.8054,32.7809]},{"n":"EBJ UNION STATION","l":"BLUE","p":[-96.8082,32.7762]},{"n":"CONVENTION CENTER STATION","l":"BLUE","p":[-96.803,32.7725]},{"n":"CEDARS STATION","l":"BLUE","p":[-96.7933,32.7686]},{"n":"8TH & CORINTH STATION","l":"BLUE","p":[-96.7985,32.7481]},{"n":"MORRELL STATION","l":"BLUE","p":[-96.8026,32.7399]},{"n":"ILLINOIS TC/STATION","l":"BLUE","p":[-96.8052,32.7233]},{"n":"KIEST STATION","l":"BLUE","p":[-96.8012,32.7071]},{"n":"VA MEDICAL CENTER STATION","l":"BLUE","p":[-96.793,32.6936]},{"n":"LEDBETTER STATION","l":"BLUE","p":[-96.7888,32.6834]},{"n":"CAMP WISDOM STATION","l":"BLUE","p":[-96.7881,32.6666]},{"n":"UNT DALLAS STATION","l":"BLUE","p":[-96.8011,32.6541]},{"n":"BUCKNER STATION","l":"GREEN","p":[-96.6851,32.7185]},{"n":"LAKE JUNE STATION","l":"GREEN","p":[-96.7094,32.7323]},{"n":"LAWNVIEW STATION","l":"GREEN","p":[-96.7204,32.7656]},{"n":"HATCHER STATION","l":"GREEN","p":[-96.7425,32.7663]},{"n":"MLK STATION","l":"GREEN","p":[-96.7646,32.7738]},{"n":"FAIR PARK STATION","l":"GREEN","p":[-96.7659,32.7821]},{"n":"BAYLOR STATION","l":"GREEN","p":[-96.7821,32.7865]},{"n":"DEEP ELLUM STATION","l":"GREEN","p":[-96.7885,32.7859]},{"n":"PEARL/ARTS DISTRICT STATION","l":"GREEN","p":[-96.7943,32.7866]},{"n":"ST PAUL STATION","l":"GREEN","p":[-96.797,32.7843]},{"n":"AKARD STATION","l":"GREEN","p":[-96.8006,32.7819]},{"n":"WEST END STATION","l":"GREEN","p":[-96.8054,32.7809]},{"n":"VICTORY STATION","l":"GREEN","p":[-96.8125,32.7896]},{"n":"MARKET CENTER STATION","l":"GREEN","p":[-96.8237,32.8046]},{"n":"SOUTHWEST MEDICAL DISTRICT/PARKLAND","l":"GREEN","p":[-96.8332,32.8136]},{"n":"INWOOD/LOVE FIELD STATION","l":"GREEN","p":[-96.8334,32.8222]},{"n":"BURBANK STATION","l":"GREEN","p":[-96.8622,32.843]},{"n":"BACHMAN STATION","l":"GREEN","p":[-96.8773,32.8538]},{"n":"WALNUT HILL/DENTON STATION","l":"GREEN","p":[-96.8838,32.8821]},{"n":"ROYAL LANE STATION","l":"GREEN","p":[-96.8881,32.8961]},{"n":"FARMERS BRANCH STATION","l":"GREEN","p":[-96.8962,32.922]},{"n":"DOWNTOWN CARROLLTON STATION","l":"GREEN","p":[-96.9083,32.9544]},{"n":"TRINITY MILLS RAIL STATION","l":"GREEN","p":[-96.9265,32.9809]},{"n":"NORTH CARROLLTON/FRANKFORD STATION","l":"GREEN","p":[-96.9368,32.9916]},{"n":"DFW AIRPORT STATION","l":"ORANGE","p":[-97.0395,32.9074]},{"n":"BELT LINE STATION","l":"ORANGE","p":[-96.9865,32.888]},{"n":"DALLAS COLLEGE NORTHLAKE CAMPUS STATION","l":"ORANGE","p":[-96.9671,32.8752]},{"n":"HIDDEN RIDGE STATION","l":"ORANGE","p":[-96.9552,32.8821]},{"n":"IRVING CONVENTION CENTER STATION","l":"ORANGE","p":[-96.9386,32.8769]},{"n":"LAS COLINAS URBAN CENTER STATION","l":"ORANGE","p":[-96.9336,32.8686]},{"n":"UNIVERSITY OF DALLAS STATION","l":"ORANGE","p":[-96.915,32.8491]},{"n":"BACHMAN STATION","l":"ORANGE","p":[-96.8773,32.8538]},{"n":"BURBANK STATION","l":"ORANGE","p":[-96.8622,32.843]},{"n":"INWOOD/LOVE FIELD STATION","l":"ORANGE","p":[-96.8334,32.8222]},{"n":"SOUTHWEST MEDICAL DISTRICT/PARKLAND","l":"ORANGE","p":[-96.8332,32.8136]},{"n":"MARKET CENTER STATION","l":"ORANGE","p":[-96.8237,32.8046]},{"n":"VICTORY STATION","l":"ORANGE","p":[-96.8125,32.7896]},{"n":"WEST END STATION","l":"ORANGE","p":[-96.8054,32.7809]},{"n":"AKARD STATION","l":"ORANGE","p":[-96.8006,32.7819]},{"n":"ST PAUL STATION","l":"ORANGE","p":[-96.797,32.7843]},{"n":"PEARL/ARTS DISTRICT STATION","l":"ORANGE","p":[-96.7943,32.7866]},{"n":"CITYPLACE/UPTOWN STATION","l":"ORANGE","p":[-96.7932,32.8054]},{"n":"SMU/MOCKINGBIRD STATION","l":"ORANGE","p":[-96.7749,32.8378]},{"n":"LOVERS LANE STATION","l":"ORANGE","p":[-96.7718,32.8486]},{"n":"PARK LANE STATION","l":"ORANGE","p":[-96.7659,32.8725]},{"n":"WALNUT HILL STATION","l":"ORANGE","p":[-96.7649,32.8826]},{"n":"FOREST LN STATION","l":"ORANGE","p":[-96.7617,32.9086]},{"n":"LBJ / CENTRAL STATION","l":"ORANGE","p":[-96.7522,32.9183]},{"n":"SPRING VALLEY STATION","l":"ORANGE","p":[-96.7374,32.9409]},{"n":"ARAPAHO CENTER STATION","l":"ORANGE","p":[-96.723,32.9634]},{"n":"GALATYN PARK STATION","l":"ORANGE","p":[-96.711,32.9852]},{"n":"CITYLINE/BUSH STATION","l":"ORANGE","p":[-96.7031,33.0022]},{"n":"12TH STREET STATION","l":"ORANGE","p":[-96.7011,33.0144]},{"n":"DOWNTOWN PLANO STATION","l":"ORANGE","p":[-96.7009,33.0209]},{"n":"PARKER ROAD STATION","l":"ORANGE","p":[-96.7007,33.0335]}]};
+
     // ── Arena sites ──
     const DOWNTOWN = { lat: 32.7762, lng: -96.7997, label: 'Downtown Site' };
     const VALLEY_VIEW = { lat: 32.9290, lng: -96.8030, label: 'Valley View Site' };
@@ -256,9 +259,44 @@
           maxZoom: 19
         }).addTo(map);
 
+        // Draw DART rail lines (static — drawn once beneath district layers)
+        const DART_LINE_COLORS = { RED: '#FD3E3E', BLUE: '#198BC3', GREEN: '#006F38', ORANGE: '#F68B1F' };
+        DART_RAIL.lines.forEach(line => {
+          const latlngs = line.p.map(c => [c[1], c[0]]);
+          L.polyline(latlngs, {
+            color: line.c,
+            weight: 2.5,
+            opacity: 0.55,
+            dashArray: '6, 4',
+            interactive: false
+          }).addTo(map);
+        });
+
+        // Draw DART stations (small dots, deduplicated by name)
+        const drawnStations = new Set();
+        DART_RAIL.stations.forEach(s => {
+          if (drawnStations.has(s.n)) return;
+          drawnStations.add(s.n);
+          const lines = DART_RAIL.stations.filter(st => st.n === s.n).map(st => st.l);
+          L.circleMarker([s.p[1], s.p[0]], {
+            radius: 3,
+            fillColor: '#fff',
+            color: DART_LINE_COLORS[lines[0]],
+            weight: 1.5,
+            fillOpacity: 0.8,
+            opacity: 0.7
+          }).bindTooltip(
+            `<div style="line-height:1.4">
+              <strong style="color:#C8A951">${s.n.replace(' STATION', '')}</strong><br/>
+              <span style="font-size:11px">${lines.map(l => '<span style="color:' + DART_LINE_COLORS[l] + '">' + l + '</span>').join(' · ')}</span>
+            </div>`,
+            { className: 'hover-tooltip', direction: 'right', offset: [8, 0] }
+          ).addTo(map);
+        });
+
         L.control.zoom({ position: 'topleft' }).addTo(map);
         L.control.attribution({ position: 'bottomleft', prefix: false })
-          .addAttribution('&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/">OSM</a> | District data: City of Dallas GIS')
+          .addAttribution('&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/">OSM</a> | District data: City of Dallas GIS | Rail: DART GTFS')
           .addTo(map);
 
         mapInstanceRef.current = map;
@@ -663,13 +701,21 @@
                 borderLeft: '3px solid #3B82F6'
               }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#3B82F6', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                  Transit Access
+                  DART Rail Lines (shown on map)
                 </div>
                 <div style={{ fontSize: 12, color: '#E2E8F0', lineHeight: 1.5 }}>
-                  <strong>Downtown:</strong> DART Victory Station — <span style={{ color: '#22C55E' }}>Green</span>, <span style={{ color: '#EA580C' }}>Orange</span>, <span style={{ color: '#DC2626' }}>Red</span>, <span style={{ color: '#3B82F6' }}>Blue</span> lines
+                  <strong>Downtown:</strong> Victory Station — <span style={{ color: '#006F38' }}>Green</span>, <span style={{ color: '#F68B1F' }}>Orange</span>, <span style={{ color: '#FD3E3E' }}>Red</span>, <span style={{ color: '#198BC3' }}>Blue</span> lines
                 </div>
                 <div style={{ fontSize: 12, color: '#E2E8F0', lineHeight: 1.5, marginTop: 3 }}>
-                  <strong>Valley View:</strong> <span style={{ color: '#F87171' }}>Zero rail access</span>
+                  <strong>Valley View:</strong> <span style={{ color: '#F87171' }}>Zero rail access</span> — nearest station ~3 mi away
+                </div>
+                <div style={{ display: 'flex', gap: 10, marginTop: 6, flexWrap: 'wrap' }}>
+                  {[{n:'Red',c:'#FD3E3E'},{n:'Blue',c:'#198BC3'},{n:'Green',c:'#006F38'},{n:'Orange',c:'#F68B1F'}].map(l => (
+                    <div key={l.n} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10 }}>
+                      <div style={{ width: 16, height: 2, background: l.c, borderRadius: 1 }}></div>
+                      <span style={{ color: l.c }}>{l.n}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
