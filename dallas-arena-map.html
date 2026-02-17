@@ -131,13 +131,30 @@
       const mapInstanceRef = useRef(null);
       const layersRef = useRef({ districts: [], circles: [], markers: [], labels: [] });
 
+      // Approx 2020 Census population per district (Dallas ~1.3M, redistricting targets equal pop)
+      const DISTRICT_POP = {1:93000,2:93000,3:93000,4:93000,5:93000,6:93000,7:93000,8:93000,9:93000,10:93000,11:93000,12:93000,13:93000,14:93000};
+      const dtMaxDist = Math.max(...districtData.map(d => d.dtDist));
+      const vvMaxDist = Math.max(...districtData.map(d => d.vvDist));
+
       // Stats
       const stats = useMemo(() => {
-        const inDT = districtData.filter(d => d.dtDist <= radius).length;
-        const inVV = districtData.filter(d => d.vvDist <= radius).length;
+        const inDT = districtData.filter(d => d.dtDist <= radius);
+        const inVV = districtData.filter(d => d.vvDist <= radius);
+        const southernInDT = districtData.filter(d => d.isSouthern && d.dtDist <= radius);
+        const southernInVV = districtData.filter(d => d.isSouthern && d.vvDist <= radius);
         const southernLosing = districtData.filter(d => d.isSouthern && d.dtDist <= radius && d.vvDist > radius);
-        return { inDT, inVV, southernLosing, radius };
+        const popDT = inDT.reduce((s,d) => s + DISTRICT_POP[d.d], 0);
+        const popVV = inVV.reduce((s,d) => s + DISTRICT_POP[d.d], 0);
+        return { inDT:inDT.length, inVV:inVV.length, southernInDT:southernInDT.length, southernInVV:southernInVV.length, southernLosing, popDT, popVV, coverageGap:inDT.length-inVV.length };
       }, [radius]);
+
+      // Dynamic insight text
+      const insight = useMemo(() => {
+        const {inDT,inVV,southernInDT,southernInVV,coverageGap,popDT,popVV} = stats;
+        if (coverageGap > 0) return `At ${radius} mi, Downtown covers ${coverageGap} more district${coverageGap!==1?'s':''} than Valley View (${inDT} vs ${inVV}), reaching ~${(popDT/1000).toFixed(0)}K residents vs ~${(popVV/1000).toFixed(0)}K. Downtown serves ${southernInDT}/6 Southern districts; Valley View serves ${southernInVV}/6.`;
+        if (coverageGap === 0) return `At ${radius} mi, both sites cover ${inDT} districts — but Downtown reaches ${southernInDT}/6 Southern Dallas districts vs Valley View's ${southernInVV}/6.`;
+        return `At ${radius} mi, Valley View covers ${-coverageGap} more district${-coverageGap!==1?'s':''} (${inVV} vs ${inDT}). However, Downtown still reaches ${southernInDT}/6 Southern districts vs Valley View's ${southernInVV}/6.`;
+      }, [stats, radius]);
 
       const sortedDistricts = useMemo(() => {
         return [...districtData].sort((a, b) => {
@@ -421,39 +438,112 @@
 
             {/* Sidebar */}
             <div style={{
-              width: 310, flexShrink: 0, background: '#111827',
+              width: 320, flexShrink: 0, background: '#111827',
               borderLeft: '1px solid #1E293B', overflowY: 'auto',
               display: 'flex', flexDirection: 'column'
             }}>
-              {/* Stat cards */}
-              <div style={{ padding: '12px 14px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                <StatCard label="Downtown Radius" value={`${stats.inDT} / 14`} sub="districts" color="#22C55E" />
-                <StatCard label="Valley View Radius" value={`${stats.inVV} / 14`} sub="districts" color="#3B82F6" />
-                <StatCard label="Southern Losing" value={stats.southernLosing.length} sub="districts" color="#DC2626" />
-                <StatCard label="Current Radius" value={`${radius} mi`} sub="adjustable" color="#C8A951" />
+              {/* Dynamic Insight Banner */}
+              <div style={{
+                margin: '12px 14px 8px', padding: '10px 12px',
+                background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
+                borderRadius: 6, border: '1px solid #C8A951',
+              }}>
+                <div style={{ fontSize: 12, color: '#E2E8F0', lineHeight: 1.5 }}>{insight}</div>
               </div>
 
-              {/* Equity callout */}
-              {stats.southernLosing.length > 0 && (
-                <div style={{
-                  margin: '0 14px 8px', padding: '10px 12px',
-                  background: '#1E293B', borderRadius: 6,
-                  borderLeft: '3px solid #DC2626'
-                }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#DC2626', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                    Equity Impact
+              {/* Coverage Comparison Bars */}
+              <div style={{ padding: '0 14px 8px' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#C8A951', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  District Coverage at {radius} mi
+                </div>
+                {/* All districts bar */}
+                <div style={{ marginBottom: 8 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#94A3B8', marginBottom: 3 }}>
+                    <span>All 14 Districts</span>
+                    <span style={{ color: stats.coverageGap > 0 ? '#4ADE80' : stats.coverageGap < 0 ? '#F87171' : '#94A3B8' }}>
+                      {stats.coverageGap > 0 ? `DT +${stats.coverageGap}` : stats.coverageGap < 0 ? `VV +${-stats.coverageGap}` : 'Tied'}
+                    </span>
                   </div>
-                  <div style={{ fontSize: 12, color: '#E2E8F0', lineHeight: 1.5 }}>
-                    At {radius} mi radius, <strong style={{ color: '#F87171' }}>
-                    {stats.southernLosing.length} Southern Dallas district{stats.southernLosing.length !== 1 ? 's' : ''}
-                    </strong> lose{stats.southernLosing.length === 1 ? 's' : ''} access:
-                    {' '}{stats.southernLosing.map(d => `D${d.d}`).join(', ')}.
+                  <div style={{ display: 'flex', gap: 4, alignItems: 'center', fontSize: 10 }}>
+                    <span style={{ width: 18, color: '#22C55E', fontWeight: 700 }}>DT</span>
+                    <div style={{ flex: 1, background: '#0F172A', borderRadius: 3, height: 16, position: 'relative', overflow: 'hidden' }}>
+                      <div style={{ width: `${(stats.inDT/14)*100}%`, height: '100%', background: 'linear-gradient(90deg, #22C55E, #16A34A)', borderRadius: 3, transition: 'width 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 4 }}>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: '#fff' }}>{stats.inDT}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 6, lineHeight: 1.4 }}>
-                    These voters provided the <strong style={{ color: '#C8A951' }}>1,642-vote margin</strong> in the 1998 arena bond election.
+                  <div style={{ display: 'flex', gap: 4, alignItems: 'center', fontSize: 10, marginTop: 3 }}>
+                    <span style={{ width: 18, color: '#3B82F6', fontWeight: 700 }}>VV</span>
+                    <div style={{ flex: 1, background: '#0F172A', borderRadius: 3, height: 16, position: 'relative', overflow: 'hidden' }}>
+                      <div style={{ width: `${(stats.inVV/14)*100}%`, height: '100%', background: 'linear-gradient(90deg, #3B82F6, #2563EB)', borderRadius: 3, transition: 'width 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 4 }}>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: '#fff' }}>{stats.inVV}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              )}
+                {/* Southern districts bar */}
+                <div style={{ marginBottom: 4 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#94A3B8', marginBottom: 3 }}>
+                    <span>Southern Dallas (6 districts)</span>
+                    <span style={{ color: stats.southernInDT > stats.southernInVV ? '#4ADE80' : '#F87171' }}>
+                      {stats.southernInDT > stats.southernInVV ? `DT +${stats.southernInDT - stats.southernInVV}` : stats.southernInDT === stats.southernInVV ? 'Tied' : `VV +${stats.southernInVV - stats.southernInDT}`}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', gap: 4, alignItems: 'center', fontSize: 10 }}>
+                    <span style={{ width: 18, color: '#22C55E', fontWeight: 700 }}>DT</span>
+                    <div style={{ flex: 1, background: '#0F172A', borderRadius: 3, height: 16, position: 'relative', overflow: 'hidden' }}>
+                      <div style={{ width: `${(stats.southernInDT/6)*100}%`, height: '100%', background: 'linear-gradient(90deg, #22C55E, #16A34A)', borderRadius: 3, transition: 'width 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 4 }}>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: '#fff' }}>{stats.southernInDT}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 4, alignItems: 'center', fontSize: 10, marginTop: 3 }}>
+                    <span style={{ width: 18, color: '#3B82F6', fontWeight: 700 }}>VV</span>
+                    <div style={{ flex: 1, background: '#0F172A', borderRadius: 3, height: 16, position: 'relative', overflow: 'hidden' }}>
+                      <div style={{ width: `${(stats.southernInVV/6)*100}%`, height: '100%', background: stats.southernInVV === 0 ? '#DC2626' : 'linear-gradient(90deg, #3B82F6, #2563EB)', borderRadius: 3, transition: 'width 0.3s', minWidth: stats.southernInVV === 0 ? 0 : undefined, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 4 }}>
+                        {stats.southernInVV > 0 && <span style={{ fontSize: 10, fontWeight: 700, color: '#fff' }}>{stats.southernInVV}</span>}
+                      </div>
+                      {stats.southernInVV === 0 && <span style={{ position: 'absolute', left: 24, top: '50%', transform: 'translateY(-50%)', fontSize: 9, color: '#DC2626', fontWeight: 700 }}>ZERO</span>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stat cards */}
+              <div style={{ padding: '4px 14px 8px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                <StatCard label="DT Coverage" value={`${stats.inDT}/14`} sub={`~${(stats.popDT/1000).toFixed(0)}K residents`} color="#22C55E" />
+                <StatCard label="VV Coverage" value={`${stats.inVV}/14`} sub={`~${(stats.popVV/1000).toFixed(0)}K residents`} color="#3B82F6" />
+                <StatCard label="Full City Radius" value={`${dtMaxDist.toFixed(1)}`} sub="mi (Downtown)" color="#22C55E" />
+                <StatCard label="Full City Radius" value={`${vvMaxDist.toFixed(1)}`} sub="mi (Valley View)" color="#3B82F6" />
+              </div>
+
+              {/* Equity callout — always show, content varies */}
+              <div style={{
+                margin: '0 14px 8px', padding: '10px 12px',
+                background: '#1E293B', borderRadius: 6,
+                borderLeft: '3px solid #DC2626'
+              }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#DC2626', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  Equity Impact — Southern Dallas
+                </div>
+                {stats.southernLosing.length > 0 ? (
+                  <div style={{ fontSize: 12, color: '#E2E8F0', lineHeight: 1.5 }}>
+                    <strong style={{ color: '#F87171' }}>
+                    {stats.southernLosing.length} Southern district{stats.southernLosing.length !== 1 ? 's' : ''}
+                    </strong> lose{stats.southernLosing.length === 1 ? 's' : ''} access at Valley View:
+                    {' '}{stats.southernLosing.map(d => `D${d.d}`).join(', ')}.
+                    <br/><span style={{ fontSize: 11, color: '#94A3B8' }}>Valley View reaches <strong style={{ color: '#F87171' }}>{stats.southernInVV}/6</strong> Southern districts vs Downtown's <strong style={{ color: '#4ADE80' }}>{stats.southernInDT}/6</strong>.</span>
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 12, color: '#E2E8F0', lineHeight: 1.5 }}>
+                    Downtown reaches <strong style={{ color: '#4ADE80' }}>{stats.southernInDT}/6</strong> Southern districts; Valley View reaches <strong style={{ color: stats.southernInVV === 0 ? '#F87171' : '#60A5FA' }}>{stats.southernInVV}/6</strong>.
+                    {stats.southernInVV === 0 && <span style={{ color: '#F87171' }}> Valley View serves zero Southern Dallas residents at this radius.</span>}
+                  </div>
+                )}
+                <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 6, lineHeight: 1.4 }}>
+                  Southern Dallas voters provided the <strong style={{ color: '#C8A951' }}>1,642-vote margin</strong> in the 1998 arena bond election.
+                </div>
+              </div>
 
               {/* Transit callout */}
               <div style={{
@@ -479,8 +569,8 @@
                 </div>
                 <div style={{ fontSize: 10, color: '#64748B', marginBottom: 6, display: 'flex', justifyContent: 'space-between', padding: '0 4px' }}>
                   <span style={{ width: 60 }}>District</span>
-                  <span style={{ width: 50, textAlign: 'right' }}>DT</span>
-                  <span style={{ width: 50, textAlign: 'right' }}>VV</span>
+                  <span style={{ width: 50, textAlign: 'right' }}>DT mi</span>
+                  <span style={{ width: 50, textAlign: 'right' }}>VV mi</span>
                   <span style={{ width: 50, textAlign: 'right' }}>Delta</span>
                 </div>
                 {sortedDistricts.map(dist => {
@@ -513,7 +603,7 @@
                   );
                 })}
                 <div style={{ fontSize: 9, color: '#475569', marginTop: 8, lineHeight: 1.4 }}>
-                  Distances are haversine straight-line from district centroids. Delta = VV distance minus DT distance (positive = farther from Valley View).
+                  Haversine straight-line from district centroids. Delta = VV minus DT (positive = farther from Valley View). Red border = loses access if moved to Valley View.
                 </div>
               </div>
             </div>
