@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dallas Arena Site Accessibility Map</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body, #root { height: 100%; width: 100%; overflow: hidden; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0B0F19; color: #E2E8F0; }
+    .leaflet-tooltip.district-tooltip {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: #fff !important;
+      font-weight: 700 !important;
+      font-size: 13px !important;
+      text-shadow: 0 0 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7) !important;
+      padding: 0 !important;
+    }
+    .leaflet-tooltip.district-tooltip::before { display: none !important; }
+    .leaflet-tooltip.hover-tooltip {
+      background: #1E293B !important;
+      border: 1px solid #C8A951 !important;
+      color: #E2E8F0 !important;
+      font-size: 12px !important;
+      padding: 8px 12px !important;
+      border-radius: 6px !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
+      max-width: 280px !important;
+      white-space: normal !important;
+    }
+    .leaflet-tooltip.hover-tooltip::before {
+      border-right-color: #C8A951 !important;
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #111827; }
+    ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #4B5563; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback, useMemo } = React;
+
+    // ── District Data (simplified from City of Dallas GIS) ──
+    const DISTRICTS = [
+      {d:1,m:"Chad West",c:[32.7428,-96.863],coords:[[[-96.8983,32.7329],[-96.883,32.7424],[-96.9002,32.7396],[-96.9062,32.7493],[-96.9021,32.7551],[-96.8872,32.768],[-96.8625,32.7669],[-96.8497,32.7645],[-96.838,32.767],[-96.8213,32.7695],[-96.8106,32.7721],[-96.8051,32.7688],[-96.8096,32.7594],[-96.8097,32.749],[-96.8232,32.7398],[-96.8253,32.733],[-96.8298,32.7287],[-96.8356,32.7204],[-96.8571,32.7202],[-96.8856,32.7204],[-96.9001,32.7186],[-96.903,32.7138],[-96.9159,32.7204],[-96.9092,32.7284],[-96.9056,32.7302],[-96.8985,32.7313],[-96.8983,32.7329]]]},
+      {d:2,m:"Jesse Moreno",c:[32.8039,-96.7781],coords:[[[-96.8181,32.8228],[-96.8111,32.7976],[-96.8088,32.7862],[-96.802,32.7778],[-96.7831,32.7888],[-96.7892,32.8151],[-96.7671,32.7982],[-96.7406,32.7993],[-96.7262,32.808],[-96.6734,32.8348],[-96.6745,32.821],[-96.6963,32.8141],[-96.7262,32.8006],[-96.7265,32.798],[-96.7338,32.7837],[-96.7564,32.7839],[-96.7716,32.7809],[-96.7846,32.7639],[-96.8084,32.7706],[-96.8148,32.7942],[-96.8393,32.8065],[-96.865,32.8137],[-96.8721,32.8389],[-96.8417,32.8303],[-96.8274,32.8449],[-96.8209,32.8252],[-96.8181,32.8228]]]},
+      {d:3,m:"Zarin Gracey",c:[32.6711,-96.9266],coords:[[[-96.9267,32.7469],[-96.9044,32.7433],[-96.91,32.7306],[-96.9001,32.7165],[-96.8571,32.7151],[-96.8401,32.6794],[-96.818,32.6844],[-96.787,32.6796],[-96.7991,32.6698],[-96.857,32.6622],[-96.8778,32.6543],[-96.9256,32.6709],[-96.9429,32.6338],[-96.9747,32.6285],[-96.9796,32.6374],[-96.983,32.6328],[-96.9821,32.6258],[-96.988,32.6266],[-96.9921,32.62],[-96.9924,32.6148],[-96.9985,32.6267],[-96.991,32.6428],[-96.9849,32.6861],[-96.976,32.714],[-96.9856,32.7348],[-96.9266,32.7465],[-96.9267,32.7469]]]},
+      {d:4,m:"Maxie Johnson",c:[32.7159,-96.8083],coords:[[[-96.8012,32.7594],[-96.7851,32.7514],[-96.7797,32.7502],[-96.776,32.7462],[-96.771,32.7425],[-96.7633,32.7277],[-96.7566,32.7129],[-96.7576,32.6992],[-96.7729,32.694],[-96.789,32.6864],[-96.8029,32.6827],[-96.8105,32.6837],[-96.8219,32.6867],[-96.8224,32.6766],[-96.8346,32.6733],[-96.8399,32.6833],[-96.8443,32.6912],[-96.8569,32.6999],[-96.8571,32.7151],[-96.846,32.7203],[-96.8312,32.723],[-96.8278,32.7307],[-96.8243,32.7337],[-96.823,32.7399],[-96.81,32.7483],[-96.8098,32.7584],[-96.8012,32.7594]]]},
+      {d:5,m:"Jaime Resendez",c:[32.7444,-96.7086],coords:[[[-96.7122,32.7796],[-96.6761,32.778],[-96.6654,32.7559],[-96.6516,32.7488],[-96.639,32.7265],[-96.6515,32.7009],[-96.6832,32.7132],[-96.6931,32.7191],[-96.7174,32.7184],[-96.7333,32.7149],[-96.7304,32.7212],[-96.7273,32.725],[-96.7262,32.7275],[-96.7215,32.732],[-96.7228,32.7351],[-96.7188,32.7374],[-96.7376,32.7555],[-96.7359,32.756],[-96.7349,32.7571],[-96.7343,32.7579],[-96.7325,32.7609],[-96.731,32.7663],[-96.7121,32.7691],[-96.7081,32.7736],[-96.7246,32.7818],[-96.716,32.7825],[-96.7122,32.7796]]]},
+      {d:6,m:"Laura Cadena",c:[32.8855,-96.9158],coords:[[[-96.942,32.9687],[-96.9359,32.9348],[-96.9383,32.9139],[-96.9048,32.9122],[-96.8771,32.8896],[-96.8437,32.853],[-96.8696,32.8446],[-96.8381,32.8059],[-96.8357,32.7675],[-96.9263,32.7498],[-96.9183,32.7857],[-96.9054,32.8168],[-96.8939,32.8504],[-96.923,32.8605],[-96.9297,32.8798],[-96.9293,32.8912],[-96.9235,32.8996],[-96.9369,32.9125],[-96.9338,32.9279],[-96.9363,32.938],[-96.9586,32.9501],[-96.9683,32.9522],[-96.9729,32.9558],[-96.9514,32.9489],[-96.9356,32.9371],[-96.9441,32.9629],[-96.942,32.9687]]]},
+      {d:7,m:"Adam Bazaldua",c:[32.7657,-96.7226],coords:[[[-96.7355,32.7571],[-96.738,32.7555],[-96.7209,32.7364],[-96.7227,32.7312],[-96.7267,32.7254],[-96.7306,32.7197],[-96.7473,32.7032],[-96.7688,32.7408],[-96.7826,32.7522],[-96.7785,32.7748],[-96.7682,32.785],[-96.7466,32.7831],[-96.7279,32.7954],[-96.7275,32.7994],[-96.7159,32.8034],[-96.6834,32.8086],[-96.6622,32.8188],[-96.6819,32.7964],[-96.6433,32.7596],[-96.6652,32.7549],[-96.7012,32.778],[-96.727,32.7833],[-96.7094,32.7712],[-96.7297,32.7664],[-96.7322,32.7586],[-96.7349,32.7571],[-96.7355,32.7571]]]},
+      {d:8,m:"Lorie Blair",c:[32.6733,-96.7228],coords:[[[-96.6375,32.6941],[-96.5955,32.7027],[-96.5657,32.7016],[-96.5753,32.6785],[-96.596,32.6601],[-96.6267,32.6523],[-96.6672,32.6561],[-96.6786,32.6764],[-96.6952,32.6767],[-96.7214,32.6691],[-96.7228,32.665],[-96.7663,32.6197],[-96.7806,32.6401],[-96.8215,32.6407],[-96.8742,32.6403],[-96.8792,32.6549],[-96.8694,32.6621],[-96.8179,32.6624],[-96.7957,32.6709],[-96.7882,32.6781],[-96.7763,32.6924],[-96.749,32.7025],[-96.7173,32.7168],[-96.6941,32.7197],[-96.6792,32.7105],[-96.6441,32.6976],[-96.6375,32.6941]]]},
+      {d:9,m:"Paula Blackmon",c:[32.8815,-96.5458],coords:[[[-96.772,32.8505],[-96.6919,32.871],[-96.5474,32.8534],[-96.5475,32.8653],[-96.5885,32.8756],[-96.5954,32.8989],[-96.5795,32.8803],[-96.5605,32.8847],[-96.5496,32.8905],[-96.5448,32.9182],[-96.5395,32.9158],[-96.5388,32.8898],[-96.5285,32.8797],[-96.5203,32.8701],[-96.5161,32.8739],[-96.5213,32.9406],[-96.4748,32.9742],[-96.4938,32.9457],[-96.4707,32.9217],[-96.4826,32.8924],[-96.4897,32.859],[-96.5049,32.8407],[-96.5028,32.8293],[-96.4828,32.8101],[-96.6243,32.8458],[-96.7738,32.8457],[-96.772,32.8505]]]},
+      {d:10,m:"Kathy Stewart",c:[32.8855,-96.7405],coords:[[[-96.7487,32.9234],[-96.724,32.9255],[-96.6975,32.9079],[-96.6918,32.8751],[-96.7119,32.8643],[-96.7258,32.8588],[-96.7306,32.8601],[-96.7314,32.8627],[-96.7344,32.8632],[-96.7385,32.8669],[-96.74,32.8694],[-96.741,32.8714],[-96.7427,32.8734],[-96.7435,32.8752],[-96.746,32.877],[-96.7493,32.8807],[-96.753,32.8825],[-96.753,32.8842],[-96.7526,32.8886],[-96.7554,32.8896],[-96.7592,32.8915],[-96.7611,32.895],[-96.7629,32.8976],[-96.7683,32.9125],[-96.7606,32.9278],[-96.746,32.9275],[-96.7487,32.9234]]]},
+      {d:11,m:"Bill Roth",c:[32.9409,-96.7937],coords:[[[-96.8219,32.9672],[-96.8102,32.9685],[-96.8044,32.9703],[-96.8044,32.9646],[-96.7915,32.9631],[-96.7896,32.9708],[-96.7889,32.9754],[-96.7785,32.9757],[-96.769,32.9665],[-96.7691,32.9494],[-96.7506,32.9356],[-96.7616,32.9268],[-96.7662,32.9184],[-96.7689,32.8988],[-96.7702,32.8843],[-96.7867,32.88],[-96.7878,32.8947],[-96.804,32.9095],[-96.8059,32.9257],[-96.8207,32.9261],[-96.8234,32.945],[-96.8173,32.9491],[-96.8097,32.946],[-96.8081,32.9503],[-96.8219,32.9567],[-96.8222,32.9641],[-96.8219,32.9672]]]},
+      {d:12,m:"Cara Mendelsohn",c:[32.9891,-96.8089],coords:[[[-96.769,32.9709],[-96.7834,32.9757],[-96.789,32.9739],[-96.7909,32.97],[-96.7927,32.9627],[-96.8043,32.9674],[-96.8051,32.9706],[-96.8156,32.9685],[-96.8219,32.9706],[-96.8291,32.9813],[-96.8388,32.9873],[-96.8411,32.9871],[-96.847,32.9873],[-96.8719,33.0005],[-96.8661,33.0058],[-96.8661,33.0116],[-96.8442,33.0135],[-96.8383,33.0162],[-96.8223,33.014],[-96.8015,33.0126],[-96.7809,33.0054],[-96.7616,32.9993],[-96.7559,32.9972],[-96.756,32.9963],[-96.7567,32.9847],[-96.7683,32.9777],[-96.769,32.9709]]]},
+      {d:13,m:"Gay Donnell Willis",c:[32.8824,-96.7984],coords:[[[-96.772,32.8505],[-96.8063,32.8604],[-96.8199,32.8242],[-96.8214,32.8453],[-96.8513,32.8592],[-96.8475,32.8728],[-96.8653,32.8808],[-96.8705,32.8951],[-96.8807,32.9079],[-96.8612,32.9166],[-96.8524,32.92],[-96.827,32.9265],[-96.8065,32.9257],[-96.7878,32.8946],[-96.7702,32.8865],[-96.7615,32.8966],[-96.7593,32.8917],[-96.7547,32.8901],[-96.7527,32.8843],[-96.7519,32.8815],[-96.7468,32.8777],[-96.7429,32.8744],[-96.7408,32.8724],[-96.7403,32.8684],[-96.7605,32.8645],[-96.7709,32.8514],[-96.772,32.8505]]]},
+      {d:14,m:"Paul Ridley",c:[32.8068,-96.7808],coords:[[[-96.8169,32.8218],[-96.8062,32.8232],[-96.8025,32.8198],[-96.7928,32.8225],[-96.7815,32.8324],[-96.7657,32.8365],[-96.7529,32.8329],[-96.751,32.8161],[-96.7508,32.8127],[-96.7336,32.8137],[-96.7318,32.8087],[-96.7382,32.7999],[-96.7509,32.8022],[-96.762,32.7966],[-96.7705,32.8079],[-96.7864,32.8149],[-96.7907,32.8058],[-96.7777,32.7946],[-96.7875,32.7856],[-96.7936,32.7798],[-96.804,32.7772],[-96.809,32.784],[-96.8088,32.7885],[-96.8074,32.7918],[-96.8105,32.8008],[-96.8179,32.8114],[-96.8169,32.8218]]]}
+    ];
+
+    // ── Sector & metadata ──
+    const SECTORS = {
+      1:'Southern Dallas',3:'Southern Dallas',4:'Southern Dallas',5:'Southern Dallas',7:'Southern Dallas',8:'Southern Dallas',
+      10:'North Dallas',11:'North Dallas',12:'North Dallas',13:'North Dallas',
+      2:'Central',14:'Central',
+      6:'West Dallas',
+      9:'East Dallas'
+    };
+    const SECTOR_COLORS = {
+      'Southern Dallas':'#DC2626','North Dallas':'#6B7280','Central':'#3B82F6','West Dallas':'#EA580C','East Dallas':'#8B5CF6'
+    };
+    const SOUTHERN_DISTRICTS = [1,3,4,5,7,8];
+
+    // ── Arena sites ──
+    const DOWNTOWN = { lat: 32.7762, lng: -96.7997, label: 'Downtown Site' };
+    const VALLEY_VIEW = { lat: 32.9290, lng: -96.8030, label: 'Valley View Site' };
+    const CURRENT_AAC = { lat: 32.7905, lng: -96.8103, label: 'Current AAC' };
+
+    // ── Haversine distance (miles) ──
+    function haversine(lat1, lon1, lat2, lon2) {
+      const R = 3958.8;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    // ── Precompute distances ──
+    const districtData = DISTRICTS.map(d => {
+      const dtDist = haversine(d.c[0], d.c[1], DOWNTOWN.lat, DOWNTOWN.lng);
+      const vvDist = haversine(d.c[0], d.c[1], VALLEY_VIEW.lat, VALLEY_VIEW.lng);
+      return {
+        ...d,
+        sector: SECTORS[d.d],
+        sectorColor: SECTOR_COLORS[SECTORS[d.d]],
+        dtDist: Math.round(dtDist * 100) / 100,
+        vvDist: Math.round(vvDist * 100) / 100,
+        delta: Math.round((vvDist - dtDist) * 100) / 100,
+        isSouthern: SOUTHERN_DISTRICTS.includes(d.d)
+      };
+    });
+
+    // ── Color logic ──
+    function getDistrictColor(dist, radius, mode) {
+      const inDT = dist.dtDist <= radius;
+      const inVV = dist.vvDist <= radius;
+
+      if (mode === 'downtown') {
+        return inDT ? '#22C55E' : '#4B5563';
+      }
+      if (mode === 'valleyview') {
+        return inVV ? '#3B82F6' : '#4B5563';
+      }
+      // compare mode
+      if (inDT && inVV) return '#22C55E';    // green: both
+      if (inDT && !inVV) return '#DC2626';   // red: loses access
+      if (!inDT && inVV) return '#3B82F6';   // blue: VV only
+      return '#4B5563';                       // gray: neither
+    }
+
+    function getColorLabel(dist, radius, mode) {
+      const inDT = dist.dtDist <= radius;
+      const inVV = dist.vvDist <= radius;
+      if (mode === 'downtown') return inDT ? 'Within radius' : 'Outside radius';
+      if (mode === 'valleyview') return inVV ? 'Within radius' : 'Outside radius';
+      if (inDT && inVV) return 'Accessible from both sites';
+      if (inDT && !inVV) return 'LOSES access at Valley View';
+      if (!inDT && inVV) return 'Only Valley View';
+      return 'Outside both radii';
+    }
+
+    // ── Main App ──
+    function App() {
+      const [radius, setRadius] = useState(8);
+      const [mode, setMode] = useState('compare');
+      const mapRef = useRef(null);
+      const mapInstanceRef = useRef(null);
+      const layersRef = useRef({ districts: [], circles: [], markers: [], labels: [] });
+
+      // Stats
+      const stats = useMemo(() => {
+        const inDT = districtData.filter(d => d.dtDist <= radius).length;
+        const inVV = districtData.filter(d => d.vvDist <= radius).length;
+        const southernLosing = districtData.filter(d => d.isSouthern && d.dtDist <= radius && d.vvDist > radius);
+        return { inDT, inVV, southernLosing, radius };
+      }, [radius]);
+
+      const sortedDistricts = useMemo(() => {
+        return [...districtData].sort((a, b) => {
+          const aLoses = a.dtDist <= radius && a.vvDist > radius;
+          const bLoses = b.dtDist <= radius && b.vvDist > radius;
+          if (aLoses && !bLoses) return -1;
+          if (!aLoses && bLoses) return 1;
+          return b.delta - a.delta;
+        });
+      }, [radius]);
+
+      // Initialize map
+      useEffect(() => {
+        if (mapInstanceRef.current) return;
+        const map = L.map(mapRef.current, {
+          center: [32.82, -96.77],
+          zoom: 11,
+          zoomControl: false,
+          attributionControl: false
+        });
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          maxZoom: 19
+        }).addTo(map);
+
+        L.control.zoom({ position: 'topleft' }).addTo(map);
+        L.control.attribution({ position: 'bottomleft', prefix: false })
+          .addAttribution('&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/">OSM</a> | District data: City of Dallas GIS')
+          .addTo(map);
+
+        mapInstanceRef.current = map;
+
+        // Force resize after mount
+        setTimeout(() => map.invalidateSize(), 100);
+      }, []);
+
+      // Update map layers
+      useEffect(() => {
+        const map = mapInstanceRef.current;
+        if (!map) return;
+
+        // Clear old layers
+        layersRef.current.districts.forEach(l => map.removeLayer(l));
+        layersRef.current.circles.forEach(l => map.removeLayer(l));
+        layersRef.current.markers.forEach(l => map.removeLayer(l));
+        layersRef.current.labels.forEach(l => map.removeLayer(l));
+        layersRef.current = { districts: [], circles: [], markers: [], labels: [] };
+
+        // Draw district polygons
+        districtData.forEach(dist => {
+          const color = getDistrictColor(dist, radius, mode);
+          const latlngs = dist.coords[0].map(c => [c[1], c[0]]);
+          const poly = L.polygon(latlngs, {
+            fillColor: color,
+            fillOpacity: 0.45,
+            color: '#C8A951',
+            weight: 1.5,
+            opacity: 0.7
+          }).addTo(map);
+
+          // Hover tooltip
+          const statusLabel = getColorLabel(dist, radius, mode);
+          poly.bindTooltip(
+            `<div style="line-height:1.5">
+              <strong style="color:#C8A951;font-size:13px">District ${dist.d}</strong><br/>
+              <span style="color:#94A3B8">${dist.m}</span><br/>
+              <span style="color:${dist.sectorColor}">${dist.sector}</span><br/>
+              <hr style="border:0;border-top:1px solid #374151;margin:4px 0"/>
+              Downtown: <strong>${dist.dtDist.toFixed(1)} mi</strong><br/>
+              Valley View: <strong>${dist.vvDist.toFixed(1)} mi</strong><br/>
+              Delta: <strong style="color:${dist.delta > 0 ? '#F87171' : '#4ADE80'}">${dist.delta > 0 ? '+' : ''}${dist.delta.toFixed(1)} mi</strong><br/>
+              <span style="color:${color};font-weight:600">${statusLabel}</span>
+            </div>`,
+            { className: 'hover-tooltip', sticky: true, direction: 'right', offset: [12, 0] }
+          );
+
+          layersRef.current.districts.push(poly);
+
+          // District number label
+          const label = L.tooltip({
+            permanent: true,
+            direction: 'center',
+            className: 'district-tooltip',
+            offset: [0, 0]
+          });
+          label.setContent(`D${dist.d}`);
+          label.setLatLng([dist.c[0], dist.c[1]]);
+          label.addTo(map);
+          layersRef.current.labels.push(label);
+        });
+
+        // Draw radius circles
+        const milesToMeters = 1609.34;
+        if (mode === 'compare' || mode === 'downtown') {
+          const dtCircle = L.circle([DOWNTOWN.lat, DOWNTOWN.lng], {
+            radius: radius * milesToMeters,
+            color: '#22C55E',
+            weight: 2,
+            dashArray: '8, 6',
+            fillOpacity: 0.03,
+            fillColor: '#22C55E'
+          }).addTo(map);
+          layersRef.current.circles.push(dtCircle);
+        }
+        if (mode === 'compare' || mode === 'valleyview') {
+          const vvCircle = L.circle([VALLEY_VIEW.lat, VALLEY_VIEW.lng], {
+            radius: radius * milesToMeters,
+            color: '#3B82F6',
+            weight: 2,
+            dashArray: '8, 6',
+            fillOpacity: 0.03,
+            fillColor: '#3B82F6'
+          }).addTo(map);
+          layersRef.current.circles.push(vvCircle);
+        }
+
+        // Site markers
+        const createIcon = (color, label) => L.divIcon({
+          className: '',
+          html: `<div style="
+            width:14px;height:14px;border-radius:50%;
+            background:${color};border:2px solid #fff;
+            box-shadow:0 0 8px ${color}88;
+          "></div>`,
+          iconSize: [14, 14],
+          iconAnchor: [7, 7]
+        });
+
+        if (mode === 'compare' || mode === 'downtown') {
+          const dtMarker = L.marker([DOWNTOWN.lat, DOWNTOWN.lng], {
+            icon: createIcon('#22C55E', 'DT')
+          }).addTo(map).bindTooltip('Downtown Arena Site', {
+            className: 'hover-tooltip', direction: 'top', offset: [0, -10]
+          });
+          layersRef.current.markers.push(dtMarker);
+        }
+        if (mode === 'compare' || mode === 'valleyview') {
+          const vvMarker = L.marker([VALLEY_VIEW.lat, VALLEY_VIEW.lng], {
+            icon: createIcon('#3B82F6', 'VV')
+          }).addTo(map).bindTooltip('Valley View Arena Site', {
+            className: 'hover-tooltip', direction: 'top', offset: [0, -10]
+          });
+          layersRef.current.markers.push(vvMarker);
+        }
+
+        // Current AAC marker (always show)
+        const aacMarker = L.marker([CURRENT_AAC.lat, CURRENT_AAC.lng], {
+          icon: L.divIcon({
+            className: '',
+            html: `<div style="
+              width:10px;height:10px;border-radius:50%;
+              background:#C8A951;border:2px solid #fff;
+              box-shadow:0 0 6px #C8A95188;
+            "></div>`,
+            iconSize: [10, 10],
+            iconAnchor: [5, 5]
+          })
+        }).addTo(map).bindTooltip('Current American Airlines Center', {
+          className: 'hover-tooltip', direction: 'top', offset: [0, -8]
+        });
+        layersRef.current.markers.push(aacMarker);
+
+      }, [radius, mode]);
+
+      const modeButtons = [
+        { key: 'compare', label: 'Compare' },
+        { key: 'downtown', label: 'Downtown Only' },
+        { key: 'valleyview', label: 'Valley View Only' }
+      ];
+
+      return (
+        <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#0B0F19' }}>
+          {/* Header */}
+          <div style={{
+            background: 'linear-gradient(135deg, #111827 0%, #1E293B 100%)',
+            borderBottom: '2px solid #C8A951',
+            padding: '10px 24px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexShrink: 0
+          }}>
+            <div>
+              <div style={{ fontSize: 11, letterSpacing: 2, color: '#C8A951', fontWeight: 600, textTransform: 'uppercase' }}>
+                Dallas City Council Briefing — February 2026
+              </div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: '#F1F5F9', marginTop: 2 }}>
+                Arena Site Accessibility: Downtown vs. Valley View
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div style={{ display: 'flex', gap: 4 }}>
+                {modeButtons.map(b => (
+                  <button key={b.key} onClick={() => setMode(b.key)} style={{
+                    padding: '6px 14px',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    border: 'none',
+                    borderRadius: 4,
+                    cursor: 'pointer',
+                    background: mode === b.key ? '#C8A951' : '#1E293B',
+                    color: mode === b.key ? '#0B0F19' : '#94A3B8',
+                    transition: 'all 0.2s'
+                  }}>{b.label}</button>
+                ))}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12, color: '#94A3B8' }}>Radius:</span>
+                <input
+                  type="range" min="3" max="15" step="0.5" value={radius}
+                  onChange={e => setRadius(parseFloat(e.target.value))}
+                  style={{ width: 120, accentColor: '#C8A951' }}
+                />
+                <span style={{
+                  fontSize: 13, fontWeight: 700, color: '#C8A951',
+                  background: '#1E293B', padding: '3px 8px', borderRadius: 4,
+                  minWidth: 52, textAlign: 'center'
+                }}>{radius} mi</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Main content */}
+          <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+            {/* Map */}
+            <div style={{ flex: 1, position: 'relative' }}>
+              <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
+              {/* Legend */}
+              <div style={{
+                position: 'absolute', bottom: 24, right: 16, zIndex: 1000,
+                background: '#111827ee', borderRadius: 8, padding: '12px 16px',
+                border: '1px solid #374151', fontSize: 11
+              }}>
+                <div style={{ fontWeight: 700, color: '#C8A951', marginBottom: 6, fontSize: 12 }}>Legend</div>
+                {mode === 'compare' ? (
+                  <>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                      <div style={{ width: 12, height: 12, borderRadius: 2, background: '#22C55E' }} />
+                      <span>Both sites accessible</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                      <div style={{ width: 12, height: 12, borderRadius: 2, background: '#DC2626' }} />
+                      <span>Loses access at Valley View</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                      <div style={{ width: 12, height: 12, borderRadius: 2, background: '#3B82F6' }} />
+                      <span>Valley View only</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ width: 12, height: 12, borderRadius: 2, background: '#4B5563' }} />
+                      <span>Outside both radii</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                      <div style={{ width: 12, height: 12, borderRadius: 2, background: mode === 'downtown' ? '#22C55E' : '#3B82F6' }} />
+                      <span>Within radius</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ width: 12, height: 12, borderRadius: 2, background: '#4B5563' }} />
+                      <span>Outside radius</span>
+                    </div>
+                  </>
+                )}
+                <hr style={{ border: 0, borderTop: '1px solid #374151', margin: '6px 0' }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#22C55E', border: '1.5px solid #fff' }} />
+                  <span>Downtown site</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#3B82F6', border: '1.5px solid #fff' }} />
+                  <span>Valley View site</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#C8A951', border: '1.5px solid #fff' }} />
+                  <span>Current AAC</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Sidebar */}
+            <div style={{
+              width: 310, flexShrink: 0, background: '#111827',
+              borderLeft: '1px solid #1E293B', overflowY: 'auto',
+              display: 'flex', flexDirection: 'column'
+            }}>
+              {/* Stat cards */}
+              <div style={{ padding: '12px 14px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <StatCard label="Downtown Radius" value={`${stats.inDT} / 14`} sub="districts" color="#22C55E" />
+                <StatCard label="Valley View Radius" value={`${stats.inVV} / 14`} sub="districts" color="#3B82F6" />
+                <StatCard label="Southern Losing" value={stats.southernLosing.length} sub="districts" color="#DC2626" />
+                <StatCard label="Current Radius" value={`${radius} mi`} sub="adjustable" color="#C8A951" />
+              </div>
+
+              {/* Equity callout */}
+              {stats.southernLosing.length > 0 && (
+                <div style={{
+                  margin: '0 14px 8px', padding: '10px 12px',
+                  background: '#1E293B', borderRadius: 6,
+                  borderLeft: '3px solid #DC2626'
+                }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#DC2626', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                    Equity Impact
+                  </div>
+                  <div style={{ fontSize: 12, color: '#E2E8F0', lineHeight: 1.5 }}>
+                    At {radius} mi radius, <strong style={{ color: '#F87171' }}>
+                    {stats.southernLosing.length} Southern Dallas district{stats.southernLosing.length !== 1 ? 's' : ''}
+                    </strong> lose{stats.southernLosing.length === 1 ? 's' : ''} access:
+                    {' '}{stats.southernLosing.map(d => `D${d.d}`).join(', ')}.
+                  </div>
+                  <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 6, lineHeight: 1.4 }}>
+                    These voters provided the <strong style={{ color: '#C8A951' }}>1,642-vote margin</strong> in the 1998 arena bond election.
+                  </div>
+                </div>
+              )}
+
+              {/* Transit callout */}
+              <div style={{
+                margin: '0 14px 8px', padding: '10px 12px',
+                background: '#1E293B', borderRadius: 6,
+                borderLeft: '3px solid #3B82F6'
+              }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#3B82F6', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  Transit Access
+                </div>
+                <div style={{ fontSize: 12, color: '#E2E8F0', lineHeight: 1.5 }}>
+                  <strong>Downtown:</strong> DART Victory Station — <span style={{ color: '#22C55E' }}>Green</span>, <span style={{ color: '#EA580C' }}>Orange</span>, <span style={{ color: '#DC2626' }}>Red</span>, <span style={{ color: '#3B82F6' }}>Blue</span> lines
+                </div>
+                <div style={{ fontSize: 12, color: '#E2E8F0', lineHeight: 1.5, marginTop: 3 }}>
+                  <strong>Valley View:</strong> <span style={{ color: '#F87171' }}>Zero rail access</span>
+                </div>
+              </div>
+
+              {/* Distance table */}
+              <div style={{ flex: 1, padding: '0 14px 14px' }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#C8A951', marginBottom: 8 }}>
+                  District Impact Analysis
+                </div>
+                <div style={{ fontSize: 10, color: '#64748B', marginBottom: 6, display: 'flex', justifyContent: 'space-between', padding: '0 4px' }}>
+                  <span style={{ width: 60 }}>District</span>
+                  <span style={{ width: 50, textAlign: 'right' }}>DT</span>
+                  <span style={{ width: 50, textAlign: 'right' }}>VV</span>
+                  <span style={{ width: 50, textAlign: 'right' }}>Delta</span>
+                </div>
+                {sortedDistricts.map(dist => {
+                  const losesAccess = dist.dtDist <= radius && dist.vvDist > radius;
+                  return (
+                    <div key={dist.d} style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '5px 4px', fontSize: 11,
+                      borderLeft: losesAccess ? '3px solid #DC2626' : '3px solid transparent',
+                      background: losesAccess ? '#DC262610' : 'transparent',
+                      borderRadius: 2, marginBottom: 1
+                    }}>
+                      <span style={{ width: 60 }}>
+                        <strong style={{ color: dist.sectorColor }}>D{dist.d}</strong>
+                        <span style={{ color: '#64748B', fontSize: 9, marginLeft: 3 }}>{dist.sector.split(' ')[0]}</span>
+                      </span>
+                      <span style={{ width: 50, textAlign: 'right', color: dist.dtDist <= radius ? '#4ADE80' : '#94A3B8' }}>
+                        {dist.dtDist.toFixed(1)}
+                      </span>
+                      <span style={{ width: 50, textAlign: 'right', color: dist.vvDist <= radius ? '#60A5FA' : '#94A3B8' }}>
+                        {dist.vvDist.toFixed(1)}
+                      </span>
+                      <span style={{
+                        width: 50, textAlign: 'right', fontWeight: 600,
+                        color: dist.delta > 2 ? '#F87171' : dist.delta < -2 ? '#4ADE80' : '#94A3B8'
+                      }}>
+                        {dist.delta > 0 ? '+' : ''}{dist.delta.toFixed(1)}
+                      </span>
+                    </div>
+                  );
+                })}
+                <div style={{ fontSize: 9, color: '#475569', marginTop: 8, lineHeight: 1.4 }}>
+                  Distances are haversine straight-line from district centroids. Delta = VV distance minus DT distance (positive = farther from Valley View).
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── Stat Card Component ──
+    function StatCard({ label, value, sub, color }) {
+      return (
+        <div style={{
+          background: '#1E293B', borderRadius: 6, padding: '10px 12px',
+          borderTop: `2px solid ${color}`
+        }}>
+          <div style={{ fontSize: 10, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: 0.5 }}>{label}</div>
+          <div style={{ fontSize: 22, fontWeight: 800, color, marginTop: 2 }}>{value}</div>
+          <div style={{ fontSize: 10, color: '#64748B' }}>{sub}</div>
+        </div>
+      );
+    }
+
+    // ── Render ──
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
