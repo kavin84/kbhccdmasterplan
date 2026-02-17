@@ -250,20 +250,6 @@
         return `At ${radius} mi, Valley View covers ${-coverageGap} more district${-coverageGap!==1?'s':''} (${inVV} vs ${inDT}). However, Downtown still reaches ${southernInDT}/6 Southern districts vs Valley View's ${southernInVV}/6.`;
       }, [stats, radius]);
 
-      const sortedDistricts = useMemo(() => {
-        return [...districtData].sort((a, b) => {
-          const aDtCov = coverageFraction(a.sampleDists, radius, 'dt');
-          const aVvCov = coverageFraction(a.sampleDists, radius, 'vv');
-          const bDtCov = coverageFraction(b.sampleDists, radius, 'dt');
-          const bVvCov = coverageFraction(b.sampleDists, radius, 'vv');
-          const aLoses = aDtCov > 0 && aVvCov === 0;
-          const bLoses = bDtCov > 0 && bVvCov === 0;
-          if (aLoses && !bLoses) return -1;
-          if (!aLoses && bLoses) return 1;
-          return b.delta - a.delta;
-        });
-      }, [radius]);
-
       // Initialize map
       useEffect(() => {
         if (mapInstanceRef.current) return;
@@ -757,7 +743,7 @@
                   DART Rail Lines (shown on map)
                 </div>
                 <div style={{ fontSize: 12, color: '#E2E8F0', lineHeight: 1.5 }}>
-                  <strong>Downtown:</strong> Victory Station — <span style={{ color: '#006F38' }}>Green</span>, <span style={{ color: '#F68B1F' }}>Orange</span>, <span style={{ color: '#FD3E3E' }}>Red</span>, <span style={{ color: '#198BC3' }}>Blue</span> lines
+                  <strong>Downtown:</strong> <span style={{ color: '#006F38' }}>Green</span>, <span style={{ color: '#F68B1F' }}>Orange</span>, <span style={{ color: '#FD3E3E' }}>Red</span>, <span style={{ color: '#198BC3' }}>Blue</span> lines
                 </div>
                 <div style={{ fontSize: 12, color: '#E2E8F0', lineHeight: 1.5, marginTop: 3 }}>
                   <strong>Valley View:</strong> <span style={{ color: '#F87171' }}>Zero rail access</span> — nearest station ~3 mi away
@@ -772,50 +758,35 @@
                 </div>
               </div>
 
-              {/* Distance table */}
-              <div style={{ flex: 1, padding: '0 14px 14px' }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#C8A951', marginBottom: 8 }}>
-                  District Impact Analysis
+              {/* Downtown Advantage Summary */}
+              <div style={{
+                margin: '0 14px 14px', padding: '12px 14px',
+                background: 'linear-gradient(135deg, #0F2318 0%, #0F172A 100%)',
+                borderRadius: 6, border: '1px solid #22C55E'
+              }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#22C55E', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  Why Downtown Is the Better Location
                 </div>
-                <div style={{ fontSize: 10, color: '#64748B', marginBottom: 6, display: 'flex', justifyContent: 'space-between', padding: '0 4px' }}>
-                  <span style={{ width: 60 }}>District</span>
-                  <span style={{ width: 50, textAlign: 'right' }}>DT mi</span>
-                  <span style={{ width: 50, textAlign: 'right' }}>VV mi</span>
-                  <span style={{ width: 50, textAlign: 'right' }}>Delta</span>
-                </div>
-                {sortedDistricts.map(dist => {
-                  const dtCov = coverageFraction(dist.sampleDists, radius, 'dt');
-                  const vvCov = coverageFraction(dist.sampleDists, radius, 'vv');
-                  const losesAccess = dtCov > 0 && vvCov === 0;
-                  return (
-                    <div key={dist.d} style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                      padding: '5px 4px', fontSize: 11,
-                      borderLeft: losesAccess ? '3px solid #DC2626' : '3px solid transparent',
-                      background: losesAccess ? '#DC262610' : 'transparent',
-                      borderRadius: 2, marginBottom: 1
-                    }}>
-                      <span style={{ width: 60 }}>
-                        <strong style={{ color: dist.sectorColor }}>D{dist.d}</strong>
-                        <span style={{ color: '#64748B', fontSize: 9, marginLeft: 3 }}>{dist.sector.split(' ')[0]}</span>
-                      </span>
-                      <span style={{ width: 50, textAlign: 'right', color: dtCov > 0 ? '#4ADE80' : '#94A3B8' }}>
-                        {dist.dtDist.toFixed(1)}
-                      </span>
-                      <span style={{ width: 50, textAlign: 'right', color: vvCov > 0 ? '#60A5FA' : '#94A3B8' }}>
-                        {dist.vvDist.toFixed(1)}
-                      </span>
-                      <span style={{
-                        width: 50, textAlign: 'right', fontWeight: 600,
-                        color: dist.delta > 2 ? '#F87171' : dist.delta < -2 ? '#4ADE80' : '#94A3B8'
-                      }}>
-                        {dist.delta > 0 ? '+' : ''}{dist.delta.toFixed(1)}
-                      </span>
+                <div style={{ fontSize: 12, color: '#E2E8F0', lineHeight: 1.6 }}>
+                  {[
+                    { icon: '1', text: <><strong style={{ color: '#4ADE80' }}>More equitable reach.</strong> Downtown covers {stats.inDT}/14 districts vs Valley View's {stats.inVV}/14 at {radius} mi — serving <strong style={{ color: '#C8A951' }}>{(stats.popDT - stats.popVV).toLocaleString()} more residents</strong>.</> },
+                    { icon: '2', text: <><strong style={{ color: '#4ADE80' }}>Southern Dallas access.</strong> Downtown reaches {stats.southernInDT}/6 Southern districts; Valley View reaches only {stats.southernInVV}/6. Southern Dallas — 42% of the city — provided the 1,642-vote margin that built the current arena.</> },
+                    { icon: '3', text: <><strong style={{ color: '#4ADE80' }}>Full transit connectivity.</strong> Downtown sits on all 4 DART rail lines (Green, Orange, Red, Blue). Valley View has <strong style={{ color: '#F87171' }}>zero</strong> rail access — the nearest station is ~3 miles away.</> },
+                    { icon: '4', text: <><strong style={{ color: '#4ADE80' }}>Shorter max distance.</strong> The farthest district is {dtMaxDist.toFixed(1)} mi from Downtown vs {vvMaxDist.toFixed(1)} mi from Valley View — Downtown is closer to the geographic center of the city.</> },
+                  ].map((item, i) => (
+                    <div key={i} style={{ display: 'flex', gap: 8, marginBottom: i < 3 ? 8 : 0 }}>
+                      <div style={{
+                        width: 20, height: 20, borderRadius: '50%',
+                        background: '#22C55E', color: '#0B0F19',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 11, fontWeight: 800, flexShrink: 0, marginTop: 1
+                      }}>{item.icon}</div>
+                      <div>{item.text}</div>
                     </div>
-                  );
-                })}
-                <div style={{ fontSize: 9, color: '#475569', marginTop: 8, lineHeight: 1.4 }}>
-                  Distances: Haversine straight-line from district centroids. Delta = VV minus DT (positive = farther from Valley View). Red border = loses access if moved to Valley View. Population: 2020 U.S. Census via City of Dallas GIS. Population counts are area-weighted — if 40% of a district's area falls within the radius, 40% of its residents are counted.
+                  ))}
+                </div>
+                <div style={{ fontSize: 9, color: '#475569', marginTop: 10, lineHeight: 1.4, borderTop: '1px solid #1E293B', paddingTop: 8 }}>
+                  Data: 2020 U.S. Census via City of Dallas GIS. Distances are Haversine straight-line from district centroids. Population counts are area-weighted.
                 </div>
               </div>
             </div>
