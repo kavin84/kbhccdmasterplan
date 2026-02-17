@@ -79,6 +79,13 @@
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
 
+    // ── 2020 Census data by council district (source: City of Dallas GIS / US Census Bureau) ──
+    const DISTRICT_POP = {1:77916,2:95419,3:96451,4:89916,5:81942,6:87191,7:96173,8:100474,9:89882,10:98464,11:93975,12:98347,13:91161,14:106927};
+    const DISTRICT_DENSITY = {1:6341,2:5189,3:2137,4:4378,5:4510,6:2210,7:3713,8:1862,9:3586,10:6188,11:5702,12:6982,13:3968,14:9554};
+    const DISTRICT_AREA = {1:12.29,2:18.39,3:45.14,4:20.54,5:18.17,6:39.46,7:25.90,8:53.97,9:25.06,10:15.91,11:16.48,12:14.09,13:22.98,14:11.19};
+    const TOTAL_POP = Object.values(DISTRICT_POP).reduce((a,b)=>a+b,0);
+    const SOUTHERN_POP = SOUTHERN_DISTRICTS.reduce((s,d)=>s+DISTRICT_POP[d],0);
+
     // ── Precompute distances ──
     const districtData = DISTRICTS.map(d => {
       const dtDist = haversine(d.c[0], d.c[1], DOWNTOWN.lat, DOWNTOWN.lng);
@@ -134,14 +141,6 @@
       const mapInstanceRef = useRef(null);
       const layersRef = useRef({ districts: [], circles: [], markers: [], labels: [] });
 
-      // 2020 Census population by council district (source: City of Dallas GIS / US Census Bureau)
-      const DISTRICT_POP = {1:77916,2:95419,3:96451,4:89916,5:81942,6:87191,7:96173,8:100474,9:89882,10:98464,11:93975,12:98347,13:91161,14:106927};
-      // Population density per sq mi (2020 Census)
-      const DISTRICT_DENSITY = {1:6341,2:5189,3:2137,4:4378,5:4510,6:2210,7:3713,8:1862,9:3586,10:6188,11:5702,12:6982,13:3968,14:9554};
-      // Area in sq mi
-      const DISTRICT_AREA = {1:12.29,2:18.39,3:45.14,4:20.54,5:18.17,6:39.46,7:25.90,8:53.97,9:25.06,10:15.91,11:16.48,12:14.09,13:22.98,14:11.19};
-      const TOTAL_POP = Object.values(DISTRICT_POP).reduce((a,b)=>a+b,0);
-      const SOUTHERN_POP = SOUTHERN_DISTRICTS.reduce((s,d)=>s+DISTRICT_POP[d],0);
       const dtMaxDist = Math.max(...districtData.map(d => d.dtDist));
       const vvMaxDist = Math.max(...districtData.map(d => d.vvDist));
 
