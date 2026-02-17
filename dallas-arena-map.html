@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Dallas Arena Site Accessibility Map</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -10,9 +10,14 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body, #root { height: 100%; width: 100%; overflow: hidden; }
-    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0B0F19; color: #E2E8F0; }
+    body {
+      font-family: -apple-system, 'SF Pro Text', system-ui, 'Segoe UI', sans-serif;
+      background: #0B0F19; color: #E2E8F0;
+      -webkit-text-size-adjust: 100%;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
     .leaflet-tooltip.district-tooltip {
       background: transparent !important;
       border: none !important;
@@ -43,10 +48,13 @@
     ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: #4B5563; }
     @media (max-width: 767px) {
-      .leaflet-control-zoom { transform: scale(0.85); transform-origin: top left; }
+      .leaflet-control-zoom { transform: scale(1.15); transform-origin: top left; }
+      .leaflet-control-zoom a { width: 36px !important; height: 36px !important; line-height: 36px !important; font-size: 20px !important; }
       .leaflet-tooltip.hover-tooltip { max-width: 220px !important; font-size: 11px !important; }
+      .leaflet-tooltip.district-tooltip { font-size: 11px !important; }
     }
-    input[type="range"] { height: 24px; }
+    input[type="range"] { height: 32px; font-size: 16px; }
+    select, input, textarea, button { font-size: 16px; }
   </style>
 </head>
 <body>
@@ -355,7 +363,7 @@
               Pop: <strong>${(dist.pop).toLocaleString()}</strong> &nbsp;|&nbsp; Density: <strong>${(dist.density).toLocaleString()}</strong>/sq mi &nbsp;|&nbsp; Area: <strong>${dist.area}</strong> sq mi<br/>
               <span style="color:${color};font-weight:600">${statusLabel}</span>
             </div>`,
-            { className: 'hover-tooltip', sticky: true, direction: 'right', offset: [12, 0] }
+            { className: 'hover-tooltip', sticky: !isMobile, direction: isMobile ? 'top' : 'right', offset: isMobile ? [0, -10] : [12, 0] }
           );
 
           layersRef.current.districts.push(poly);
@@ -447,7 +455,7 @@
         });
         layersRef.current.markers.push(aacMarker);
 
-      }, [radius, mode]);
+      }, [radius, mode, isMobile]);
 
       const modeButtons = [
         { key: 'compare', label: 'Compare' },
@@ -456,7 +464,7 @@
       ];
 
       return (
-        <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#0B0F19' }}>
+        <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: '#0B0F19' }}>
           {/* Header */}
           <div style={{
             background: 'linear-gradient(135deg, #111827 0%, #1E293B 100%)',
@@ -481,8 +489,8 @@
               <div style={{ display: 'flex', gap: 4 }}>
                 {modeButtons.map(b => (
                   <button key={b.key} onClick={() => setMode(b.key)} style={{
-                    padding: isMobile ? '6px 10px' : '6px 14px',
-                    fontSize: isMobile ? 11 : 12,
+                    padding: isMobile ? '10px 12px' : '6px 14px',
+                    fontSize: isMobile ? 13 : 12,
                     fontWeight: 600,
                     border: 'none',
                     borderRadius: 4,
@@ -518,17 +526,18 @@
               {/* Mobile drawer toggle button */}
               {isMobile && (
                 <button onClick={() => { setDrawerOpen(!drawerOpen); setTimeout(() => mapInstanceRef.current && mapInstanceRef.current.invalidateSize(), 350); }} style={{
-                  position: 'absolute', bottom: 12, left: '50%', transform: 'translateX(-50%)',
+                  position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)',
                   zIndex: 1100, background: '#C8A951', color: '#0B0F19',
-                  border: 'none', borderRadius: 20, padding: '8px 20px',
-                  fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                  boxShadow: '0 2px 12px rgba(0,0,0,0.5)'
+                  border: 'none', borderRadius: 22, padding: '12px 24px',
+                  fontSize: 14, fontWeight: 700, cursor: 'pointer',
+                  boxShadow: '0 2px 12px rgba(0,0,0,0.5)',
+                  minHeight: 44
                 }}>{drawerOpen ? 'Close Details' : 'View Details'}</button>
               )}
 
               {/* Legend */}
               <div style={{
-                position: 'absolute', bottom: isMobile ? 52 : 24, right: isMobile ? 8 : 16, zIndex: 1000,
+                position: 'absolute', bottom: isMobile ? 68 : 24, right: isMobile ? 8 : 16, zIndex: 1000,
                 background: '#111827ee', borderRadius: 8, padding: isMobile ? '8px 10px' : '12px 16px',
                 border: '1px solid #374151', fontSize: isMobile ? 10 : 11
               }}>
@@ -596,14 +605,16 @@
               }),
               background: '#111827',
               overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
               display: 'flex', flexDirection: 'column'
             }}>
               {/* Mobile drawer handle */}
               {isMobile && (
                 <div onClick={() => setDrawerOpen(false)} style={{
-                  display: 'flex', justifyContent: 'center', padding: '8px 0 4px', cursor: 'pointer', flexShrink: 0
+                  display: 'flex', justifyContent: 'center', padding: '12px 0 8px', cursor: 'pointer', flexShrink: 0,
+                  minHeight: 44
                 }}>
-                  <div style={{ width: 40, height: 4, borderRadius: 2, background: '#4B5563' }} />
+                  <div style={{ width: 48, height: 5, borderRadius: 3, background: '#4B5563' }} />
                 </div>
               )}
               {/* Dynamic Insight Banner */}
